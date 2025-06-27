@@ -1,5 +1,7 @@
-import antfu from '@antfu/eslint-config'
+import antfu from "@antfu/eslint-config";
 
-export default antfu(
-
-)
+export default antfu({
+  rules: {
+    "vue/html-self-closing": 0,
+  },
+});
