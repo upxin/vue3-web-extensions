@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { sendMessage } from "webext-bridge/background";
-import { storageDemo } from "~/logic/storage";
+import { Button, Radio, RadioGroup } from "ant-design-vue";
+import { isGray } from "~/logic/storage";
 
 function openOptionsPage() {
   browser.runtime.openOptionsPage();
@@ -13,17 +14,23 @@ async function getActiveTabId(): Promise<number> {
   }
   return tabs[0].id!;
 }
-
-async function handleOpenClter() {
+async function clear() {
   const tabId = await getActiveTabId();
-  // 方案1: 使用正确的参数格式发送消息
-  sendMessage("test", { title: "哈哈" }, { context: "content-script", tabId })
+  sendMessage(
+    "test",
+    { title: "优化表格" },
+    { context: "content-script", tabId }
+  )
     .then((response) => {
       console.log("test成功:", response);
     })
     .catch((err) => {
       console.log("test失败:", err);
     });
+}
+
+async function handleOpenClter() {
+  const tabId = await getActiveTabId();
 
   browser.tabs
     .sendMessage(tabId, { type: "open", isOpen: true })
@@ -34,16 +41,25 @@ async function handleOpenClter() {
       console.error("open失败:", error);
     });
 }
+function changeGray() {
+  clear();
+}
 </script>
 
 <template>
-  <main class="w-full px-4 py-5 text-center text-gray-700">
-    <div @click="handleOpenClter">
+  <main
+    class="w-full px-4 py-5 text-center text-gray-700 h-full flex flex-col box-border"
+  >
+    <div class="mb-20px" @click="handleOpenClter">
       <Logo />
     </div>
-    <button class="btn mt-2" @click="openOptionsPage">Open Options</button>
-    <div class="mt-2">
-      <span class="opacity-50">Storage:</span> {{ storageDemo }}
-    </div>
+    <Button type="primary" class="mb-20px" @click="openOptionsPage">
+      Open Options
+    </Button>
+    <Button type="primary" class="mb-20px" @click="clear"> 优化 </Button>
+    <RadioGroup v-model:value="isGray" @change="changeGray">
+      <Radio value="1"> 红 1 </Radio>
+      <Radio value="2"> 灰 2 </Radio>
+    </RadioGroup>
   </main>
 </template>
