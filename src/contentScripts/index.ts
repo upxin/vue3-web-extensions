@@ -1,12 +1,6 @@
-/* eslint-disable no-console */
 import { onMessage } from "webext-bridge/content-script";
 import { createApp } from "vue";
 import App from "./views/App.vue";
-
-// 导入需要的组件
-// 或者导入全部组件
-// import Antd from "ant-design-vue";
-
 import { setupApp } from "~/logic/common-setup";
 
 // Firefox `browser.tabs.executeScript()` requires scripts return a primitive value
@@ -17,7 +11,6 @@ import { setupApp } from "~/logic/common-setup";
   onMessage("tab-prev", ({ data }) => {
     console.log(`[vitesse-webext] Navigate from page "${data.title}"`);
   });
-
   // mount component to context window
   const container = document.createElement("div");
   container.id = __NAME__;

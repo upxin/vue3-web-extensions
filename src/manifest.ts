@@ -52,16 +52,16 @@ export async function getManifest() {
   };
 
   // add sidepanel
-  // if (isFirefox) {
-  //   manifest.sidebar_action = {
-  //     default_panel: "dist/sidepanel/index.html",
-  //   };
-  // } else {
-  //   // the sidebar_action does not work for chromium based
-  //   (manifest as any).side_panel = {
-  //     default_path: "dist/sidepanel/index.html",
-  //   };
-  // }
+  if (isFirefox) {
+    manifest.sidebar_action = {
+      default_panel: "dist/sidepanel/index.html",
+    };
+  } else {
+    // the sidebar_action does not work for chromium based
+    (manifest as any).side_panel = {
+      default_path: "dist/sidepanel/index.html",
+    };
+  }
 
   // FIXME: not work in MV3
   if (isDev && false) {
