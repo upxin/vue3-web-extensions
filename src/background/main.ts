@@ -26,9 +26,7 @@ browser.action.onClicked.addListener(() => {
   // 方法2（可选）：手动创建标签页打开 Options 页面（需 "tabs" 权限）
   // chrome.tabs.create({ url: chrome.runtime.getURL('options.html') });
 });
-browser.runtime.onInstalled.addListener((): void => {
-  console.log("Extension installed");
-});
+browser.runtime.onInstalled.addListener((): void => {});
 
 let previousTabId = 0;
 
@@ -49,7 +47,6 @@ browser.tabs.onActivated.addListener(async ({ tabId }) => {
     return;
   }
 
-  console.log("previous tab", tab);
   sendMessage(
     "tab-prev",
     { title: tab.title },

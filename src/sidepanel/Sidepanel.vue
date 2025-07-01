@@ -21,12 +21,8 @@ async function clear() {
     { title: "优化表格" },
     { context: "content-script", tabId }
   )
-    .then((response) => {
-      console.log("test成功:", response);
-    })
-    .catch((err) => {
-      console.log("test失败:", err);
-    });
+    .then((response) => {})
+    .catch((err) => {});
 }
 
 async function handleOpenClter() {
@@ -34,12 +30,8 @@ async function handleOpenClter() {
 
   browser.tabs
     .sendMessage(tabId, { type: "open", isOpen: true })
-    .then((response) => {
-      console.log("open成功:", response);
-    })
-    .catch((error) => {
-      console.error("open失败:", error);
-    });
+    .then((response) => {})
+    .catch((error) => {});
 }
 function changeGray() {
   clear();

@@ -1,8 +1,6 @@
 <script lang="ts" setup>
 import { useClipboard } from "@vueuse/core";
-import { message } from "ant-design-vue";
-
-const [messageApi, contextHolder] = message.useMessage();
+import { ElButton, ElMessage } from "element-plus";
 
 const list = [
   [1, 2, 3, null, null, 12, 13, 14, null, null, 23, 24, 25],
@@ -20,7 +18,10 @@ watch(
   () => copied.value,
   (v) => {
     if (v) {
-      messageApi.success("复制成功");
+      ElMessage({
+        message: "复制成功",
+        type: "success",
+      });
     }
   }
 );
@@ -63,18 +64,12 @@ function handleItem(num: number) {
 
     <!-- 按钮组 -->
     <div class="flex gap-4 mt-4">
-      <button
-        class="border-0 px-6 py-2.5 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg shadow transition-all duration-300 transform active:scale-95"
-        @click="copy(source)"
-      >
+      <ElButton type="primary" size="small" @click="copy(source)">
         复制
-      </button>
-      <button
-        class="border-0 px-6 py-2.5 bg-gray-200 hover:bg-gray-300 text-slate-700 font-medium rounded-lg shadow transition-all duration-300 transform active:scale-95"
-        @click="handleList.clear()"
-      >
+      </ElButton>
+      <ElButton type="primary" size="small" @click="handleList.clear()">
         清除
-      </button>
+      </ElButton>
     </div>
   </div>
 </template>

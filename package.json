@@ -31,7 +31,8 @@
   },
   "dependencies": {
     "ant-design-vue": "4.x",
-    "element-plus": "^2.10.2"
+    "element-plus": "^2.10.2",
+    "sass": "^1.89.2"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^2.27.0",

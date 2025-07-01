@@ -140,7 +140,6 @@ function clear() {
       const tbody = element.closest("tbody"); // 找到当前 .thbg 元素的最近 tbody 父元素
       if (tbody) {
         tbody.remove(); // 删除 tbody
-        console.log("已删除包含.thbg的tbody");
       }
     });
   }
@@ -204,6 +203,4 @@ export function changeGray() {
     document.getElementById("zst").style.filter =
       isGray.value === "2" ? "grayscale(100%)" : "";
   }
-  console.log(isGray.value, isGray.value === "2");
-  console.log("currentUrl", currentUrl);
 }

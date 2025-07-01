@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, reactive, ref } from "vue";
+import { ElButton } from "element-plus";
 
 // 窗口尺寸
 const windowWidth = ref<number>(window.innerWidth);
@@ -189,12 +190,14 @@ onUnmounted(() => {
 
 <template>
   <div class="screenshot-app">
-    <button
-      class="start-btn fixed bottom-50px left-20px z-9999 cursor-pointer"
+    <ElButton
+      type="primary"
+      size="small"
+      class="fixed bottom-50px left-20px z-9999 cursor-pointer"
       @click="startScreenshot"
     >
       开始截图
-    </button>
+    </ElButton>
 
     <div v-if="isCapturing" class="screenshot-overlay">
       <!-- 上方遮罩 -->
@@ -295,8 +298,8 @@ onUnmounted(() => {
 
       <!-- 操作栏 -->
       <div class="toolbar">
-        <button @click="cancelScreenshot">取消</button>
-        <button @click="completeScreenshot">完成</button>
+        <ElButton @click="cancelScreenshot"> 取消 </ElButton>
+        <ElButton @click="completeScreenshot"> 完成 </ElButton>
       </div>
     </div>
   </div>
@@ -435,7 +438,6 @@ onUnmounted(() => {
 }
 
 .handle:hover {
-  transform: scale(1.3);
   background: #337ab7;
 }
 

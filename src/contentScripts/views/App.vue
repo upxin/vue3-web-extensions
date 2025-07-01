@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMessage } from "webext-bridge/content-script";
 import { message } from "ant-design-vue";
+import { ElButton } from "element-plus";
 import DataSimulation from "./DataSimulation.vue";
 import Overlay from "./Overlay.vue";
 import { changeGray, init } from "./hidden";
@@ -129,35 +130,27 @@ const cUrl = window.location.hostname;
       }
     "
   />
-  <button
+  <ElButton
     v-if="cUrl.includes('lotto.sina.cn')"
-    class="fixed bottom-90px left-20px z-9999 cursor-pointer start-btn"
+    type="primary"
+    size="small"
+    class="fixed bottom-90px left-20px z-9999 cursor-pointer"
     @click="handleGray"
   >
     {{ cMap[isGray] }}
-  </button>
+  </ElButton>
   <Drag v-model:visible="show">
     <DataSimulation></DataSimulation>
   </Drag>
   <Overlay></Overlay>
 
-  <button
+  <ElButton
     v-if="cUrl.includes('lotto.sina.cn')"
-    class="fixed bottom-124px left-20px z-9999 cursor-pointer start-btn"
+    type="primary"
+    size="small"
+    class="fixed bottom-124px left-20px z-9999 cursor-pointer"
     @click="getBall"
   >
     balls
-  </button>
+  </ElButton>
 </template>
-
-<style scoped>
-.start-btn {
-  padding: 8px 16px;
-  background-color: #409eff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-</style>
