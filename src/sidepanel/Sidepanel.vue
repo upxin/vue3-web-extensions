@@ -56,7 +56,9 @@ function changeGray() {
     <Button type="primary" class="mb-20px" @click="openOptionsPage">
       Open Options
     </Button>
-    <Button type="primary" class="mb-20px" @click="clear"> 优化 </Button>
+    <Button type="primary" class="mb-20px" @click="clear">
+      优化表格展示
+    </Button>
     <RadioGroup v-model:value="isGray" @change="changeGray">
       <Radio value="1"> 红 1 </Radio>
       <Radio value="2"> 灰 2 </Radio>

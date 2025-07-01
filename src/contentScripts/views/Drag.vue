@@ -1,5 +1,4 @@
 <script setup>
-import { nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 import { useMouse, useToggle, useWindowSize } from "@vueuse/core";
 
 // 接收props

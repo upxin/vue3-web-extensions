@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Overlay from "./Overlay.vue";
 import logo from "~/assets/logo.svg";
 import { storageDemo } from "~/logic/storage";
 import DataSimulation from "~/contentScripts/views/DataSimulation.vue";
@@ -24,5 +25,6 @@ const [show, toggle] = useToggle(false);
     <Drag v-model:visible="show">
       <DataSimulation></DataSimulation>
     </Drag>
+    <Overlay></Overlay>
   </main>
 </template>
