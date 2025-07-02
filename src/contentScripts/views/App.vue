@@ -169,9 +169,9 @@ function openOverlay() {
     type="primary"
     size="small"
     class="fixed top-0px right-0px"
-    @click="showBtns = true"
+    @click="showBtns = !showBtns"
   >
-    <img :src="logo" alt="extension icon" /> open
+    <img :src="logo" alt="extension icon" /> {{ showBtns ? "close" : "open" }}
   </ElButton>
   <Drag v-model:visible="show">
     <DataSimulation></DataSimulation>
