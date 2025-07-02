@@ -8,7 +8,7 @@ import logo from "~/assets/logo.svg";
 import "uno.css";
 import { isGray } from "~/logic";
 
-const showBtns = ref(true);
+const showBtns = ref(false);
 const [show, toggle] = useToggle(false);
 const overlayRef = templateRef("overlayRef");
 function getBall() {
@@ -164,14 +164,14 @@ function openOverlay() {
     </div>
   </Drag>
   <ElButton
-    v-if="!showBtns && cUrl.includes('lotto.sina.cn')"
+    v-if="cUrl.includes('lotto.sina.cn')"
     style="width: 60px"
     type="primary"
     size="small"
-    class="fixed top-0px left-0px"
+    class="fixed top-0px right-0px"
     @click="showBtns = true"
   >
-    <img :src="logo" alt="extension icon" />buts
+    <img :src="logo" alt="extension icon" /> open
   </ElButton>
   <Drag v-model:visible="show">
     <DataSimulation></DataSimulation>
