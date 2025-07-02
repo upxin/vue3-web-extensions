@@ -168,7 +168,9 @@ function clear() {
 }
 
 function setNone(id) {
-  document.getElementById(id).style.display = "none";
+  if (document.getElementById(id)) {
+    document.getElementById(id).style.display = "none";
+  }
 }
 
 export function init() {
@@ -184,13 +186,15 @@ export function init() {
       document.documentElement.style.userSelect = "none";
       // 应用灰度样式
       document.body.style.maxWidth = "unset";
-      hideKl8();
-      document.getElementById("chartsTable").style.width = "100%";
+      if (document.getElementById("chartsTable")) {
+        document.getElementById("chartsTable").style.width = "100%";
+      }
       if (document.getElementsByClassName("zst_table")?.[1]) {
         document.getElementsByClassName("zst_table")[1].style.width = "100%";
       }
       setNone("wrapper");
       clear();
+      hideKl8();
     }
   } catch (error) {
     console.error("初始化失败:", error);
@@ -199,7 +203,7 @@ export function init() {
 
 export function changeGray() {
   const currentUrl = window.location.hostname;
-  if (currentUrl.includes("lotto.sina.cn")) {
+  if (currentUrl.includes("lotto.sina.cn") && document.getElementById("zst")) {
     document.getElementById("zst").style.filter =
       isGray.value === "2" ? "grayscale(100%)" : "";
   }
