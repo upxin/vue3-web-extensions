@@ -169,7 +169,7 @@ onUnmounted(() => {
 <template>
   <div
     ref="modalRef"
-    class="fixed bg-white rounded-lg shadow-xl overflow-hidden select-none"
+    class="fixed bg-white rounded-lg shadow-xl overflow-hidden select-none min-w-340px"
     :style="{
       left: `${position.x}px`,
       top: `${position.y}px`,
