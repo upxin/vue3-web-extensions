@@ -1,22 +1,19 @@
-<script setup>
-import { useMouse, useToggle, useWindowSize } from "@vueuse/core";
+<script setup lang="ts">
+interface Props {
+  showClose?: boolean;
+  x?: number;
+  y?: number;
+  zIndex?: number;
+  title?: string;
+}
 
-// 接收props
-defineProps({
-  width: {
-    type: String,
-    default: "auto",
-  },
-  height: {
-    type: String,
-    default: "auto",
-  },
-  zIndex: {
-    type: Number,
-    default: 10000,
-  },
+const props = withDefaults(defineProps<Props>(), {
+  showClose: true,
+  x: -1,
+  y: -1,
+  zIndex: 10000,
+  title: "拖拽区域",
 });
-
 // 使用defineModel定义visible双向绑定
 const visible = defineModel("visible", {
   default: true,
@@ -27,20 +24,21 @@ const isDragging = ref(false);
 const position = ref({ x: 0, y: 0 });
 const offset = ref({ x: 0, y: 0 });
 const { width: windowWidth, height: windowHeight } = useWindowSize();
-const modalRef = ref(null);
+const modalRef = ref();
 const modalSize = ref({ width: 0, height: 0 });
 
 // 初始化位置 - 居中显示
 function initializePosition() {
   if (visible.value && modalRef.value) {
     // 更新模态框尺寸
+    if (props.x >= 0) {
+      position.value = {
+        x: props.x,
+        y: props.y,
+      };
+      return;
+    }
     updateModalSize();
-
-    // 计算居中位置
-    position.value = {
-      x: (windowWidth.value - modalSize.value.width) / 2,
-      y: (windowHeight.value - modalSize.value.height) / 2,
-    };
   }
 }
 
@@ -51,12 +49,21 @@ function updateModalSize() {
       width: modalRef.value.offsetWidth,
       height: modalRef.value.offsetHeight,
     };
+    console.log(windowWidth.value, modalSize.value.width);
+    // 默认居中 计算居中位置
+    position.value = {
+      x: (windowWidth.value - modalSize.value.width) / 2,
+      y: (windowHeight.value - modalSize.value.height) / 2,
+    };
   }
 }
 
 // 初始化
 onMounted(() => {
-  initializePosition();
+  const timer = setTimeout(() => {
+    initializePosition();
+    clearTimeout(timer);
+  }, 50);
   // 添加窗口大小变化监听
   window.addEventListener("resize", handleWindowResize);
 });
@@ -84,13 +91,17 @@ function handleWindowResize() {
 }
 
 // 监听visible变化，重置位置
-watch(visible, (newVal) => {
-  if (newVal) {
-    nextTick(() => {
-      initializePosition();
-    });
-  }
-});
+watch(
+  visible,
+  (newVal) => {
+    if (newVal) {
+      nextTick(() => {
+        initializePosition();
+      });
+    }
+  },
+  { immediate: true }
+);
 
 // 开始拖拽
 function startDrag(e) {
@@ -154,8 +165,6 @@ onUnmounted(() => {
     ref="modalRef"
     class="fixed bg-white rounded-lg shadow-xl overflow-hidden select-none"
     :style="{
-      width,
-      height,
       left: `${position.x}px`,
       top: `${position.y}px`,
       zIndex,
@@ -165,14 +174,15 @@ onUnmounted(() => {
     <!-- 标题栏 - 拖拽区域 -->
     <div
       id="drag-title"
-      class="h-40px bg-gray-100 flex items-center px-14px cursor-move border-b border-gray-200"
+      class="h-30px bg-gray-100 flex text-14px font-bold items-center px-14px cursor-move border-b border-gray-200"
       @mousedown="startDrag"
     >
       <slot name="title">
-        <span class="font-medium text-gray-700">模拟器</span>
+        <span class="text-gray-700">{{ title }}</span>
       </slot>
       <zondicons:close-outline
-        class="ml-auto text-18px cursor-pointer"
+        v-if="showClose"
+        class="ml-auto text-16px cursor-pointer text-gray-400"
         @click="close"
       />
     </div>

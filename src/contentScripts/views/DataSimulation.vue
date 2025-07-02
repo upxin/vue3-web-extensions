@@ -37,7 +37,6 @@ function handleItem(num: number) {
 </script>
 
 <template>
-  <contextHolder></contextHolder>
   <div
     class="bg-gradient-to-br py-20px from-slate-50 to-slate-100 flex flex-col items-center"
   >

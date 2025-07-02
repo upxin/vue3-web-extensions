@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { onMessage } from "webext-bridge/content-script";
-import { message } from "ant-design-vue";
-import { ElButton } from "element-plus";
+import { ElButton, ElMessage } from "element-plus";
 import DataSimulation from "./DataSimulation.vue";
 import Overlay from "./Overlay.vue";
 import { changeGray, init } from "./hidden";
-import Drag from "./Drag.vue";
 import logo from "~/assets/logo.svg";
 import "uno.css";
 import { isGray } from "~/logic";
 
+const showBtns = ref(true);
 const [show, toggle] = useToggle(false);
+const overlayRef = templateRef("overlayRef");
 function getBall() {
   // 获取最后一个具有hasbb类的表格行
   function getLastHasbbRow() {
@@ -34,7 +34,7 @@ function getBall() {
       // 使用Clipboard API复制文本
       await navigator.clipboard.writeText(text);
       console.log("复制成功:", text);
-      message.success("复制成功");
+      ElMessage.success("复制成功");
       return true;
     } catch (error) {
       console.error("复制失败:", error);
@@ -117,40 +117,66 @@ const cMap = {
   1: "gray",
 } as const;
 const cUrl = window.location.hostname;
+
+const openCap = ref(false);
+function openOverlay() {
+  overlayRef.value?.startScreenshot?.();
+}
 </script>
 
 <template>
-  <img
-    :src="logo"
-    class="fixed top-50vh left-20px z-9999 cursor-pointer"
-    alt="extension icon"
-    @click="
-      () => {
-        toggle();
-      }
-    "
-  />
+  <Drag v-model:visible="showBtns" :x="0" :y="0">
+    <div>
+      <ElButton
+        style="width: 92px"
+        type="primary"
+        size="small"
+        @click="toggle()"
+      >
+        <img :src="logo" alt="extension icon" class="w-16px pr-4px" />
+        <span>simulater</span>
+      </ElButton>
+
+      <ElButton
+        style="width: 60px"
+        type="primary"
+        size="small"
+        @click="openOverlay"
+      >
+        cut
+      </ElButton>
+      <ElButton
+        v-if="cUrl.includes('lotto.sina.cn')"
+        style="width: 60px"
+        type="primary"
+        size="small"
+        @click="handleGray"
+      >
+        {{ cMap[isGray] }}
+      </ElButton>
+      <ElButton
+        v-if="cUrl.includes('lotto.sina.cn')"
+        style="width: 60px"
+        type="primary"
+        size="small"
+        @click="getBall"
+      >
+        balls
+      </ElButton>
+    </div>
+  </Drag>
   <ElButton
-    v-if="cUrl.includes('lotto.sina.cn')"
+    v-if="!showBtns"
+    style="width: 60px"
     type="primary"
     size="small"
-    class="fixed bottom-90px left-20px z-9999 cursor-pointer"
-    @click="handleGray"
+    class="fixed top-0px left-0px"
+    @click="showBtns = true"
   >
-    {{ cMap[isGray] }}
+    <img :src="logo" alt="extension icon" />buts
   </ElButton>
   <Drag v-model:visible="show">
     <DataSimulation></DataSimulation>
   </Drag>
-  <Overlay></Overlay>
-
-  <ElButton
-    v-if="cUrl.includes('lotto.sina.cn')"
-    type="primary"
-    size="small"
-    class="fixed bottom-124px left-20px z-9999 cursor-pointer"
-    @click="getBall"
-  >
-    balls
-  </ElButton>
+  <Overlay ref="overlayRef" v-model:is-capturing="openCap"></Overlay>
 </template>

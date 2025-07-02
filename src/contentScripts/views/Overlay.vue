@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, reactive, ref } from "vue";
 import { ElButton } from "element-plus";
 
 // 窗口尺寸
@@ -7,7 +6,7 @@ const windowWidth = ref<number>(window.innerWidth);
 const windowHeight = ref<number>(window.innerHeight);
 
 // 截图状态
-const isCapturing = ref<boolean>(false);
+const isCapturing = defineModel("isCapturing", { default: false });
 const selection = reactive({
   x: 100,
   y: 100,
@@ -186,19 +185,13 @@ onUnmounted(() => {
   document.removeEventListener("mouseup", onMouseUp);
   window.removeEventListener("resize", updateWindowSize);
 });
+defineExpose({
+  startScreenshot,
+});
 </script>
 
 <template>
   <div class="screenshot-app">
-    <ElButton
-      type="primary"
-      size="small"
-      class="fixed bottom-50px left-20px z-9999 cursor-pointer"
-      @click="startScreenshot"
-    >
-      开始截图
-    </ElButton>
-
     <div v-if="isCapturing" class="screenshot-overlay">
       <!-- 上方遮罩 -->
       <div
@@ -298,8 +291,12 @@ onUnmounted(() => {
 
       <!-- 操作栏 -->
       <div class="toolbar">
-        <ElButton @click="cancelScreenshot"> 取消 </ElButton>
-        <ElButton @click="completeScreenshot"> 完成 </ElButton>
+        <ElButton type="danger" size="small" @click="cancelScreenshot">
+          取消
+        </ElButton>
+        <ElButton type="primary" size="small" @click="completeScreenshot">
+          完成
+        </ElButton>
       </div>
     </div>
   </div>
@@ -374,7 +371,7 @@ onUnmounted(() => {
 .mask-left {
   position: absolute;
   background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(2px);
+  backdrop-filter: blur(3px);
   z-index: 9998;
 }
 
@@ -484,45 +481,11 @@ onUnmounted(() => {
   cursor: ew-resize;
 }
 
-/* 工具栏 */
 .toolbar {
   position: fixed;
   bottom: 50px;
   left: 50%;
   transform: translateX(-50%);
-  display: flex;
-  gap: 10px;
-  background: rgba(255, 255, 255, 0.9);
-  padding: 8px 16px;
-  border-radius: 4px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   z-index: 10003;
-}
-
-.toolbar button {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: all 0.2s;
-}
-
-.toolbar button:first-child {
-  background: #e4e7ed;
-  color: #606266;
-}
-
-.toolbar button:first-child:hover {
-  background: #dcdfe6;
-}
-
-.toolbar button:nth-child(2) {
-  background: #409eff;
-  color: white;
-}
-
-.toolbar button:nth-child(2):hover {
-  background: #337ab7;
 }
 </style>

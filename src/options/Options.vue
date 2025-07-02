@@ -2,7 +2,6 @@
 import logo from "~/assets/logo.svg";
 import { storageDemo } from "~/logic/storage";
 import DataSimulation from "~/contentScripts/views/DataSimulation.vue";
-import Drag from "~/contentScripts/views/Drag.vue";
 
 const [show, toggle] = useToggle(false);
 </script>
