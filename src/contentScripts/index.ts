@@ -14,6 +14,9 @@ import { setupApp } from "~/logic/common-setup";
   // mount component to context window
   const container = document.createElement("div");
   container.id = __NAME__;
+  container.style.position = "fixed";
+  container.style.zIndex = "999999";
+
   const root = document.createElement("div");
   const styleEl = document.createElement("link");
   const shadowDOM =
