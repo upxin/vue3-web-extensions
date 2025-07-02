@@ -10,7 +10,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   showClose: true,
   x: -1,
-  y: -1,
+  y: 24,
   zIndex: 10000,
   title: "拖拽区域",
 });
@@ -32,8 +32,15 @@ function initializePosition() {
   if (visible.value && modalRef.value) {
     // 更新模态框尺寸
     if (props.x >= 0) {
+      console.log(
+        "=======chrome",
+        windowWidth.value,
+        modalSize.value.width,
+        modalRef.value.offsetWidth
+      );
+
       position.value = {
-        x: props.x,
+        x: windowWidth.value - modalRef.value.offsetWidth - props.x,
         y: props.y,
       };
       return;
@@ -49,7 +56,6 @@ function updateModalSize() {
       width: modalRef.value.offsetWidth,
       height: modalRef.value.offsetHeight,
     };
-    console.log(windowWidth.value, modalSize.value.width);
     // 默认居中 计算居中位置
     position.value = {
       x: (windowWidth.value - modalSize.value.width) / 2,

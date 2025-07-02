@@ -125,7 +125,7 @@ function openOverlay() {
 </script>
 
 <template>
-  <Drag v-model:visible="showBtns" :x="0" :y="0">
+  <Drag v-model:visible="showBtns" :x="0">
     <div>
       <ElButton
         style="width: 92px"
@@ -164,7 +164,7 @@ function openOverlay() {
     </div>
   </Drag>
   <ElButton
-    v-if="cUrl.includes('lotto.sina.cn')"
+    v-if="cUrl.includes('lotto.sina.cn') || cUrl.includes('localhost')"
     style="width: 60px"
     type="primary"
     size="small"
