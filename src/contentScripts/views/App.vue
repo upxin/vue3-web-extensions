@@ -146,7 +146,6 @@ function openOverlay() {
         cut
       </ElButton>
       <ElButton
-        v-if="cUrl.includes('lotto.sina.cn')"
         style="width: 60px"
         type="primary"
         size="small"
@@ -155,7 +154,6 @@ function openOverlay() {
         {{ cMap[isGray] }}
       </ElButton>
       <ElButton
-        v-if="cUrl.includes('lotto.sina.cn')"
         style="width: 60px"
         type="primary"
         size="small"
@@ -166,7 +164,7 @@ function openOverlay() {
     </div>
   </Drag>
   <ElButton
-    v-if="!showBtns"
+    v-if="!showBtns && cUrl.includes('lotto.sina.cn')"
     style="width: 60px"
     type="primary"
     size="small"
