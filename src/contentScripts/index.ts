@@ -1,8 +1,12 @@
 import { onMessage } from "webext-bridge/content-script";
 import { createApp } from "vue";
 import App from "./views/App.vue";
-import "./element-plus.css";
+import { shadowRootKey } from "./keys";
 import { setupApp } from "~/logic/common-setup";
+
+import "./element-plus.css";
+import "uno.css";
+
 // Firefox `browser.tabs.executeScript()` requires scripts return a primitive value
 (() => {
   // communication example: send previous tab title from background page
@@ -32,7 +36,7 @@ import { setupApp } from "~/logic/common-setup";
   document.body.appendChild(container);
 
   const app = createApp(App);
-
+  app.provide(shadowRootKey, shadowDOM);
   // 应用其他设置
   setupApp(app);
 

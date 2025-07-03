@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { sendMessage } from "webext-bridge/background";
-import { Button, Radio, RadioGroup } from "ant-design-vue";
 import { isGray } from "~/logic/storage";
 
 function openOptionsPage() {
@@ -40,20 +39,22 @@ function changeGray() {
 
 <template>
   <main
-    class="w-full px-4 py-5 text-center text-gray-700 h-full flex flex-col box-border"
+    class="w-full px-4 py-5 text-center text-gray-700 h-full flex flex-col items-center box-border"
   >
     <div class="mb-20px" @click="handleOpenClter">
       <Logo />
     </div>
-    <Button type="primary" class="mb-20px" @click="openOptionsPage">
-      Open Options
-    </Button>
-    <Button type="primary" class="mb-20px" @click="clear">
-      优化表格展示
-    </Button>
-    <RadioGroup v-model:value="isGray" @change="changeGray">
-      <Radio value="1"> 红 1 </Radio>
-      <Radio value="2"> 灰 2 </Radio>
-    </RadioGroup>
+    <el-button-group>
+      <el-button type="primary" class="mb-20px" @click="openOptionsPage">
+        Open Options
+      </el-button>
+      <el-button type="primary" class="mb-20px" @click="clear">
+        优化表格展示
+      </el-button>
+    </el-button-group>
+    <el-radio-group v-model="isGray" @change="changeGray">
+      <el-radio value="1"> 红 1 </el-radio>
+      <el-radio value="2"> 灰 2 </el-radio>
+    </el-radio-group>
   </main>
 </template>

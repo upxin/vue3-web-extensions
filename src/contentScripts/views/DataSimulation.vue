@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import { useClipboard } from "@vueuse/core";
-import { ElButton, ElMessage } from "element-plus";
+import { shadowRootKey } from "../keys";
+
+const shadowRoot = inject(shadowRootKey);
 
 const list = [
   [1, 2, 3, null, null, 12, 13, 14, null, null, 23, 24, 25],
@@ -19,8 +21,10 @@ watch(
   (v) => {
     if (v) {
       ElMessage({
-        message: "复制成功",
         type: "success",
+        message: "复制成功",
+        showClose: true,
+        appendTo: shadowRoot as unknown as HTMLElement,
       });
     }
   }

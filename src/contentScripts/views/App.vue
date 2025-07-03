@@ -1,17 +1,19 @@
 <script setup lang="ts">
 import { onMessage } from "webext-bridge/content-script";
-import { ElButton, ElMessage } from "element-plus";
+import { shadowRootKey } from "../keys";
 import DataSimulation from "./DataSimulation.vue";
 import Overlay from "./Overlay.vue";
 import { changeGray, init } from "./hidden";
-import logo from "~/assets/logo.svg";
-import "uno.css";
 import { isGray } from "~/logic";
+import logo from "~/assets/logo.svg";
+
+const shadowRoot = inject(shadowRootKey);
 
 const showBtns = ref(false);
 const [show, toggle] = useToggle(false);
 const overlayRef = templateRef("overlayRef");
 function getBall() {
+  if (location.hostname !== "lotto.sina.cn") return;
   // 获取最后一个具有hasbb类的表格行
   function getLastHasbbRow() {
     return document.querySelector(".hasbb:last-child");
@@ -34,7 +36,12 @@ function getBall() {
       // 使用Clipboard API复制文本
       await navigator.clipboard.writeText(text);
       console.log("复制成功:", text);
-      ElMessage.success("复制成功");
+      ElMessage({
+        type: "success",
+        message: "复制成功",
+        showClose: true,
+        appendTo: shadowRoot as unknown as HTMLElement,
+      });
       return true;
     } catch (error) {
       console.error("复制失败:", error);
@@ -86,6 +93,7 @@ function getBall() {
   main();
 }
 onMessage("test", ({ data }) => {
+  console.log("chrome===: test-msg");
   changeGray();
 });
 
@@ -127,7 +135,7 @@ function openOverlay() {
 <template>
   <Drag v-model:visible="showBtns" :x="0">
     <div>
-      <ElButton
+      <el-button
         style="width: 92px"
         type="primary"
         size="small"
@@ -135,35 +143,35 @@ function openOverlay() {
       >
         <img :src="logo" alt="extension icon" class="w-16px pr-4px" />
         <span>simulater</span>
-      </ElButton>
+      </el-button>
 
-      <ElButton
+      <el-button
         style="width: 60px"
         type="primary"
         size="small"
         @click="openOverlay"
       >
         cut
-      </ElButton>
-      <ElButton
+      </el-button>
+      <el-button
         style="width: 60px"
         type="primary"
         size="small"
         @click="handleGray"
       >
         {{ cMap[isGray] }}
-      </ElButton>
-      <ElButton
+      </el-button>
+      <el-button
         style="width: 60px"
         type="primary"
         size="small"
         @click="getBall"
       >
         balls
-      </ElButton>
+      </el-button>
     </div>
   </Drag>
-  <ElButton
+  <el-button
     v-if="cUrl.includes('lotto.sina.cn') || cUrl.includes('localhost')"
     style="width: 60px"
     type="primary"
@@ -173,7 +181,7 @@ function openOverlay() {
   >
     <img :src="logo" class="w-16px pr-4px" />
     {{ showBtns ? "close" : "open" }}
-  </ElButton>
+  </el-button>
   <Drag v-model:visible="show">
     <DataSimulation></DataSimulation>
   </Drag>
