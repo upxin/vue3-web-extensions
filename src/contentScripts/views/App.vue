@@ -7,6 +7,29 @@ import { changeGray, init } from "./hidden";
 import { isGray } from "~/logic";
 import logo from "~/assets/logo.svg";
 
+function globalLog(...args) {
+  console.log("chrome===:", ...args);
+}
+window.g = globalLog;
+
+const el = useTemplateRef<HTMLElement>("el");
+const initialValue = ref({ x: 0, y: 0 });
+const { style } = useDraggable(el, {
+  initialValue,
+  preventDefault: true,
+});
+
+onMounted(() => {
+  g("sapp");
+  nextTick(() => {
+    const elem = el.value;
+    if (elem) {
+      const width = elem.offsetWidth;
+      initialValue.value.x = window.innerWidth - width; // 右边距40px
+    }
+  });
+});
+
 const shadowRoot = inject(shadowRootKey);
 
 const showBtns = ref(false);
@@ -35,7 +58,7 @@ function getBall() {
     try {
       // 使用Clipboard API复制文本
       await navigator.clipboard.writeText(text);
-      console.log("复制成功:", text);
+      g("复制成功:", text);
       ElMessage({
         type: "success",
         message: "复制成功",
@@ -52,7 +75,7 @@ function getBall() {
       textarea.select();
       document.execCommand("copy");
       document.body.removeChild(textarea);
-      console.log("备选方案复制成功:", text);
+      g("备选方案复制成功:", text);
       return true;
     }
   }
@@ -93,7 +116,7 @@ function getBall() {
   main();
 }
 onMessage("test", ({ data }) => {
-  console.log("chrome===: test-msg");
+  g("chrome===: test-msg");
   changeGray();
 });
 
@@ -130,10 +153,13 @@ const openCap = ref(false);
 function openOverlay() {
   overlayRef.value?.startScreenshot?.();
 }
+function handleBtnClick() {
+  showBtns.value = !showBtns.value;
+}
 </script>
 
 <template>
-  <Drag v-model:visible="showBtns" :x="0">
+  <Drag v-model:visible="showBtns">
     <div>
       <el-button
         style="width: 92px"
@@ -171,17 +197,30 @@ function openOverlay() {
       </el-button>
     </div>
   </Drag>
-  <el-button
-    v-if="cUrl.includes('lotto.sina.cn') || cUrl.includes('localhost')"
-    style="width: 60px"
-    type="primary"
-    size="small"
-    class="fixed top-0px right-0px"
-    @click="showBtns = !showBtns"
-  >
-    <img :src="logo" class="w-16px pr-4px" />
-    {{ showBtns ? "close" : "open" }}
-  </el-button>
+
+  <div ref="el" :style="style" class="fixed w-70px z-1000">
+    <div
+      class="drag-handle flex items-center justify-center h-22px bg-gradient-to-r from-gray-100 to-gray-200 rounded-t-2 shadow cursor-grab select-none gap-2 hover:from-blue-100 hover:to-blue-200 transition-all"
+      @mousedown.stop
+      @touchstart.stop
+    >
+      <span class="i-mingcute:drag-line-2-fill text-gray-400 text-lg" />
+      <span class="text-gray-500 text-xs font-medium tracking-widest"
+        >拖动</span
+      >
+    </div>
+    <el-button
+      v-if="cUrl.includes('lotto.sina.cn') || cUrl.includes('localhost')"
+      type="primary"
+      size="small"
+      class="w-full rounded-b-2"
+      @click="handleBtnClick"
+    >
+      <img :src="logo" class="w-16px pr-4px" />
+      <span>{{ showBtns ? "close" : "open" }}</span>
+    </el-button>
+  </div>
+
   <Drag v-model:visible="show">
     <DataSimulation></DataSimulation>
   </Drag>
