@@ -5,7 +5,6 @@ import DataSimulation from "./DataSimulation.vue";
 import Overlay from "./Overlay.vue";
 import { changeGray, init } from "./hidden";
 import { isGray } from "~/logic";
-import logo from "~/assets/logo.svg";
 
 function globalLog(...args) {
   console.log("chrome===:", ...args);
@@ -13,7 +12,7 @@ function globalLog(...args) {
 window.g = globalLog;
 
 const el = useTemplateRef<HTMLElement>("el");
-const initialValue = ref({ x: 0, y: 0 });
+const initialValue = ref({ x: 10, y: 0 });
 const { style } = useDraggable(el, {
   initialValue,
   preventDefault: true,
@@ -25,7 +24,7 @@ onMounted(() => {
     const elem = el.value;
     if (elem) {
       const width = elem.offsetWidth;
-      initialValue.value.x = window.innerWidth - width; // 右边距40px
+      initialValue.value.x = window.innerWidth - width - 10; // 右边距40px
     }
   });
 });
@@ -223,18 +222,18 @@ function getPre() {
       @touchstart.stop
     >
       <span class="i-mingcute:drag-line-2-fill text-gray-400 text-lg" />
-      <span class="text-gray-500 text-xs font-medium tracking-widest"
-        >拖动</span
-      >
+      <span class="text-gray-500 text-xs font-medium tracking-widest">
+        拖动
+      </span>
     </div>
     <el-button
       v-if="cUrl.includes('lotto.sina.cn') || cUrl.includes('localhost')"
+      style="width: 70px"
       type="primary"
       size="small"
       class="w-full rounded-b-2"
       @click="handleBtnClick"
     >
-      <img :src="logo" class="w-16px pr-4px" />
       <span>{{ showBtns ? "close" : "open" }}</span>
     </el-button>
   </div>

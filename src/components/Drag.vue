@@ -15,7 +15,7 @@ watch(
   (v) => {
     if (v) {
       const width = v.offsetWidth;
-      initialValue.value.x = window.innerWidth - width; // 右边距40px
+      initialValue.value.x = window.innerWidth - width - 10; // 右边距40px
     }
   }
 );

@@ -9,6 +9,21 @@ import "uno.css";
 
 // Firefox `browser.tabs.executeScript()` requires scripts return a primitive value
 (() => {
+  // 创建样式元素
+  const style = document.createElement("style");
+  style.textContent = `
+  html::-webkit-scrollbar {
+    display: none;
+  }
+  html {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+`;
+
+  // 添加到文档头部
+  document.head.appendChild(style);
+
   // communication example: send previous tab title from background page
   onMessage("tab-prev", ({ data }) => {
     console.log(`[vitesse-webext] Navigate from page "${data.title}"`);
