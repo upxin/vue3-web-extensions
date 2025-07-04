@@ -46,9 +46,8 @@ function getBall() {
   function extractChartball01Texts(element) {
     if (!element) return [];
 
-    // 使用querySelectorAll获取所有class为chartball01的元素
-    const chartballElements = element.querySelectorAll(".chartball01");
-
+    // 选择所有类名中包含 "chartball" 的元素
+    const chartballElements = element.querySelectorAll('[class*="chartball"]');
     // 提取文本内容并返回数组
     return Array.from(chartballElements).map((el) => el.textContent.trim());
   }
@@ -80,7 +79,6 @@ function getBall() {
     }
   }
 
-  // 主函数：整合所有步骤
   function main() {
     // 1. 获取最后一个hasbb行
     const lastRow = getLastHasbbRow();
