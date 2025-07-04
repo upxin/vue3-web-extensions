@@ -49,7 +49,7 @@ function getBall() {
     const periodsElement = element.firstElementChild;
     const allElements = [periodsElement, ...chartballElements];
     return Array.from(allElements).map(
-      (el) => String(el?.textContent.trim()) || ""
+      (el) => Number(el?.textContent.trim()) || ""
     );
   }
 
