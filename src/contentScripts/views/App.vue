@@ -143,9 +143,10 @@ function handleGray() {
   }, 0);
 }
 const cMap = {
-  2: "red",
-  1: "gray",
+  2: "改为红色",
+  1: "改为灰色",
 } as const;
+
 const cUrl = window.location.hostname;
 
 const openCap = ref(false);
@@ -179,7 +180,7 @@ function getPre() {
         @click="toggle()"
       >
         <img :src="logo" alt="extension icon" class="w-16px pr-4px" />
-        <span>simulater</span>
+        <span>模拟器</span>
       </el-button>
       <el-button
         style="width: 92px; margin-left: 0; margin-bottom: 10px"
@@ -187,7 +188,7 @@ function getPre() {
         size="small"
         @click="openOverlay"
       >
-        cut
+        画圈
       </el-button>
       <el-button
         style="width: 92px; margin-left: 0; margin-bottom: 10px"
@@ -203,7 +204,7 @@ function getPre() {
         size="small"
         @click="getBall"
       >
-        balls
+        最新开奖号
       </el-button>
       <el-button
         style="width: 92px; margin-left: 0; margin-bottom: 10px"
@@ -211,7 +212,7 @@ function getPre() {
         size="small"
         @click="getPre"
       >
-        getPre
+        获取预选行
       </el-button>
     </section>
   </Drag>
