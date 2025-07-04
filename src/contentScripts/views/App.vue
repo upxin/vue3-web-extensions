@@ -45,11 +45,12 @@ function getBall() {
   // 从指定元素中提取所有chartball01类的文本
   function extractChartball01Texts(element) {
     if (!element) return [];
-
-    // 选择所有类名中包含 "chartball" 的元素
     const chartballElements = element.querySelectorAll('[class*="chartball"]');
-    // 提取文本内容并返回数组
-    return Array.from(chartballElements).map((el) => el.textContent.trim());
+    const periodsElement = element.firstElementChild;
+    const allElements = [periodsElement, ...chartballElements];
+    return Array.from(allElements).map(
+      (el) => String(el?.textContent.trim()) || ""
+    );
   }
 
   // 复制文本到剪贴板
