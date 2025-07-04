@@ -179,8 +179,7 @@ function getPre() {
         size="small"
         @click="toggle()"
       >
-        <img :src="logo" alt="extension icon" class="w-16px pr-4px" />
-        <span>模拟器</span>
+        模拟器
       </el-button>
       <el-button
         style="width: 92px; margin-left: 0; margin-bottom: 10px"
