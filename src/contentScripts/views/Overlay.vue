@@ -191,128 +191,115 @@ defineExpose({
 </script>
 
 <template>
-  <div class="screenshot-app">
-    <div v-if="isCapturing" class="screenshot-overlay">
-      <!-- 上方遮罩 -->
+  <div v-if="isCapturing" class="screenshot-overlay">
+    <div
+      class="mask-top"
+      :style="{
+        width: '100%',
+        height: `${selection.y}px`,
+        top: '0',
+        left: '0',
+      }"
+    ></div>
+
+    <!-- 右侧遮罩：调整高度，不与上、下遮罩层重叠 -->
+    <div
+      class="mask-right"
+      :style="{
+        width: `${windowWidth - selection.x - selection.width}px`,
+        height: `${selection.height}px`,
+        left: `${selection.x + selection.width}px`,
+        top: `${selection.y}px`,
+      }"
+    ></div>
+
+    <!-- 下方遮罩 -->
+    <div
+      class="mask-bottom"
+      :style="{
+        width: '100%',
+        height: `${windowHeight - selection.y - selection.height}px`,
+        top: `${selection.y + selection.height}px`,
+        left: '0',
+      }"
+    ></div>
+
+    <!-- 左侧遮罩：调整高度，不与上、下遮罩层重叠 -->
+    <div
+      class="mask-left"
+      :style="{
+        width: `${selection.x}px`,
+        height: `${selection.height}px`,
+        top: `${selection.y}px`,
+        left: '0',
+      }"
+    ></div>
+
+    <!-- 选择框 -->
+    <div
+      class="selection-box"
+      :style="{
+        left: `${selection.x}px`,
+        top: `${selection.y}px`,
+        width: `${selection.width}px`,
+        height: `${selection.height}px`,
+      }"
+      @mousedown="startDrag"
+    >
+      <!-- 边框 -->
+      <div class="border top"></div>
+      <div class="border right"></div>
+      <div class="border bottom"></div>
+      <div class="border left"></div>
+
+      <!-- 控制点 -->
       <div
-        class="mask-top"
-        :style="{
-          width: '100%',
-          height: `${selection.y}px`,
-          top: '0',
-          left: '0',
-        }"
+        class="handle handle-tl"
+        @mousedown="(e) => startResize('tl', e)"
       ></div>
-
-      <!-- 右侧遮罩：调整高度，不与上、下遮罩层重叠 -->
       <div
-        class="mask-right"
-        :style="{
-          width: `${windowWidth - selection.x - selection.width}px`,
-          height: `${selection.height}px`,
-          left: `${selection.x + selection.width}px`,
-          top: `${selection.y}px`,
-        }"
+        class="handle handle-tr"
+        @mousedown="(e) => startResize('tr', e)"
       ></div>
-
-      <!-- 下方遮罩 -->
       <div
-        class="mask-bottom"
-        :style="{
-          width: '100%',
-          height: `${windowHeight - selection.y - selection.height}px`,
-          top: `${selection.y + selection.height}px`,
-          left: '0',
-        }"
+        class="handle handle-br"
+        @mousedown="(e) => startResize('br', e)"
       ></div>
-
-      <!-- 左侧遮罩：调整高度，不与上、下遮罩层重叠 -->
       <div
-        class="mask-left"
-        :style="{
-          width: `${selection.x}px`,
-          height: `${selection.height}px`,
-          top: `${selection.y}px`,
-          left: '0',
-        }"
+        class="handle handle-bl"
+        @mousedown="(e) => startResize('bl', e)"
       ></div>
-
-      <!-- 选择框 -->
       <div
-        class="selection-box"
-        :style="{
-          left: `${selection.x}px`,
-          top: `${selection.y}px`,
-          width: `${selection.width}px`,
-          height: `${selection.height}px`,
-        }"
-        @mousedown="startDrag"
-      >
-        <!-- 边框 -->
-        <div class="border top"></div>
-        <div class="border right"></div>
-        <div class="border bottom"></div>
-        <div class="border left"></div>
+        class="handle handle-t"
+        @mousedown="(e) => startResize('t', e)"
+      ></div>
+      <div
+        class="handle handle-r"
+        @mousedown="(e) => startResize('r', e)"
+      ></div>
+      <div
+        class="handle handle-b"
+        @mousedown="(e) => startResize('b', e)"
+      ></div>
+      <div
+        class="handle handle-l"
+        @mousedown="(e) => startResize('l', e)"
+      ></div>
+    </div>
 
-        <!-- 控制点 -->
-        <div
-          class="handle handle-tl"
-          @mousedown="(e) => startResize('tl', e)"
-        ></div>
-        <div
-          class="handle handle-tr"
-          @mousedown="(e) => startResize('tr', e)"
-        ></div>
-        <div
-          class="handle handle-br"
-          @mousedown="(e) => startResize('br', e)"
-        ></div>
-        <div
-          class="handle handle-bl"
-          @mousedown="(e) => startResize('bl', e)"
-        ></div>
-        <div
-          class="handle handle-t"
-          @mousedown="(e) => startResize('t', e)"
-        ></div>
-        <div
-          class="handle handle-r"
-          @mousedown="(e) => startResize('r', e)"
-        ></div>
-        <div
-          class="handle handle-b"
-          @mousedown="(e) => startResize('b', e)"
-        ></div>
-        <div
-          class="handle handle-l"
-          @mousedown="(e) => startResize('l', e)"
-        ></div>
-      </div>
-
-      <!-- 操作栏 -->
-      <div class="toolbar">
-        <ElButton type="danger" size="small" @click="cancelScreenshot">
-          取消
-        </ElButton>
-        <ElButton type="primary" size="small" @click="completeScreenshot">
-          完成
-        </ElButton>
-      </div>
+    <!-- 操作栏 -->
+    <div class="toolbar">
+      <ElButton type="danger" size="small" @click="cancelScreenshot">
+        取消
+      </ElButton>
+      <ElButton type="primary" size="small" @click="completeScreenshot">
+        完成
+      </ElButton>
     </div>
   </div>
 </template>
 
 <style scoped>
-/* 应用容器 */
-.screenshot-app {
-  position: fixed;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-
 /* 背景内容 */
 .background-content {
   max-width: 800px;
