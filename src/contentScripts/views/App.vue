@@ -35,6 +35,33 @@ const shadowRoot = inject(shadowRootKey);
 const showBtns = ref(false);
 const [show, toggle] = useToggle(false);
 const overlayRef = templateRef("overlayRef");
+
+async function copyToClipboard(text) {
+  try {
+    // 使用Clipboard API复制文本
+    await navigator.clipboard.writeText(text);
+    g("复制成功:", text);
+    ElMessage({
+      type: "success",
+      message: "复制成功",
+      showClose: true,
+      appendTo: shadowRoot as unknown as HTMLElement,
+    });
+    return true;
+  } catch (error) {
+    console.error("复制失败:", error);
+    // 备选方案：使用execCommand(clipboard)
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand("copy");
+    document.body.removeChild(textarea);
+    g("备选方案复制成功:", text);
+    return true;
+  }
+}
+
 function getBall() {
   if (location.hostname !== "lotto.sina.cn") return;
   // 获取最后一个具有hasbb类的表格行
@@ -51,33 +78,6 @@ function getBall() {
     return Array.from(allElements).map(
       (el) => Number(el?.textContent.trim()) || ""
     );
-  }
-
-  // 复制文本到剪贴板
-  async function copyToClipboard(text) {
-    try {
-      // 使用Clipboard API复制文本
-      await navigator.clipboard.writeText(text);
-      g("复制成功:", text);
-      ElMessage({
-        type: "success",
-        message: "复制成功",
-        showClose: true,
-        appendTo: shadowRoot as unknown as HTMLElement,
-      });
-      return true;
-    } catch (error) {
-      console.error("复制失败:", error);
-      // 备选方案：使用execCommand(clipboard)
-      const textarea = document.createElement("textarea");
-      textarea.value = text;
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand("copy");
-      document.body.removeChild(textarea);
-      g("备选方案复制成功:", text);
-      return true;
-    }
   }
 
   function main() {
@@ -155,13 +155,25 @@ function openOverlay() {
 function handleBtnClick() {
   showBtns.value = !showBtns.value;
 }
+function getPre() {
+  // 获取所有class为realball的元素
+  const realballElements = document.querySelectorAll(".realball");
+
+  // 提取每个元素的文本内容
+  const texts = Array.from(realballElements).map((element) => {
+    // 获取元素内的纯文本，去除多余空格
+    return element.textContent.trim();
+  });
+
+  copyToClipboard(texts.map((item) => Number(item)).join(" "));
+}
 </script>
 
 <template>
   <Drag v-model:visible="showBtns">
-    <div>
+    <section flex flex-col items-center>
       <el-button
-        style="width: 92px"
+        style="width: 92px; margin-left: 0; margin-bottom: 10px"
         type="primary"
         size="small"
         @click="toggle()"
@@ -169,9 +181,8 @@ function handleBtnClick() {
         <img :src="logo" alt="extension icon" class="w-16px pr-4px" />
         <span>simulater</span>
       </el-button>
-
       <el-button
-        style="width: 60px"
+        style="width: 92px; margin-left: 0; margin-bottom: 10px"
         type="primary"
         size="small"
         @click="openOverlay"
@@ -179,7 +190,7 @@ function handleBtnClick() {
         cut
       </el-button>
       <el-button
-        style="width: 60px"
+        style="width: 92px; margin-left: 0; margin-bottom: 10px"
         type="primary"
         size="small"
         @click="handleGray"
@@ -187,14 +198,22 @@ function handleBtnClick() {
         {{ cMap[isGray] }}
       </el-button>
       <el-button
-        style="width: 60px"
+        style="width: 92px; margin-left: 0; margin-bottom: 10px"
         type="primary"
         size="small"
         @click="getBall"
       >
         balls
       </el-button>
-    </div>
+      <el-button
+        style="width: 92px; margin-left: 0; margin-bottom: 10px"
+        type="primary"
+        size="small"
+        @click="getPre"
+      >
+        getPre
+      </el-button>
+    </section>
   </Drag>
 
   <div ref="el" :style="style" class="fixed w-70px z-1000">

@@ -31,7 +31,7 @@ function close() {
   <div
     v-if="visible"
     ref="modalRef"
-    class="fixed bg-white rounded-lg shadow-xl overflow-hidden select-none min-w-340px"
+    class="fixed bg-white rounded-lg shadow-xl overflow-hidden select-none min-w-140px"
     :style="style"
   >
     <!-- 标题栏 - 拖拽区域 -->

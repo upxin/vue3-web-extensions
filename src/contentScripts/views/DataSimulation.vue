@@ -47,15 +47,15 @@ function handleItem(num: number) {
     <div
       v-for="(item, index) in list"
       :key="index"
-      class="flex gap-3 my-10px w-full px-20px box-border"
+      class="flex my-4px w-full px-20px box-border"
     >
       <div
         v-for="(innerItem, i) in item"
         :key="`${index}_${i}`"
-        class="w-30px h-30px flex items-center justify-center rounded-md font-medium transition-all duration-300"
+        class="w-30px h-30px flex mx-4px items-center justify-center rounded-md font-medium transition-all duration-300"
         :class="[
           innerItem === null
-            ? 'bg-gray-200 '
+            ? ''
             : 'bg-white  shadow-sm hover:shadow-md hover:scale-105 cursor-pointer',
           handleList.has(innerItem) ? 'text-red-5' : 'text-gray-400',
         ]"
