@@ -7,7 +7,8 @@ import Vue from "@vitejs/plugin-vue";
 import Components from "unplugin-vue-components/vite";
 import AutoImport from "unplugin-auto-import/vite";
 import { ElementPlusResolver } from "unplugin-vue-components/resolvers";
-
+import Icons from "unplugin-icons/vite";
+import IconsResolver from "unplugin-icons/resolver";
 import UnoCSS from "unocss/vite";
 import { isDev, port, r } from "./scripts/utils";
 import packageJson from "./package.json";
@@ -25,7 +26,7 @@ export const sharedConfig: UserConfig = {
   },
   plugins: [
     Vue(),
-
+    Icons(),
     AutoImport({
       imports: [
         "vue",
@@ -43,7 +44,7 @@ export const sharedConfig: UserConfig = {
       dirs: [r("src/components")],
       // generate `components.d.ts` for ts support with Volar
       dts: r("src/components.d.ts"),
-      resolvers: [ElementPlusResolver()],
+      resolvers: [ElementPlusResolver(), IconsResolver({})],
     }),
 
     // https://github.com/unocss/unocss
