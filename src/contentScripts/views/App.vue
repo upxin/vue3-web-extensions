@@ -158,14 +158,23 @@ function handleBtnClick() {
 function getPre() {
   // 获取所有class为realball的元素
   const realballElements = document.querySelectorAll(".realball");
+  const blueballs = document.querySelectorAll(".blueball");
 
   // 提取每个元素的文本内容
-  const texts = Array.from(realballElements).map((element) => {
-    // 获取元素内的纯文本，去除多余空格
-    return element?.textContent?.trim();
-  });
+  const t1 = Array.from(realballElements)
+    .map((element) => {
+      return element?.textContent?.trim();
+    })
+    .map((item) => Number(item))
+    .join(" ");
+  const t2 = Array.from(blueballs)
+    .map((element) => {
+      return element?.textContent?.trim();
+    })
+    .map((item) => Number(item))
+    .join(" ");
 
-  copyToClipboard(texts.map((item) => Number(item)).join(" "));
+  copyToClipboard(`${t1} , ${t2}`);
 }
 
 function scrollToTop() {
