@@ -26,7 +26,10 @@ export const sharedConfig: UserConfig = {
   },
   plugins: [
     Vue(),
-    Icons(),
+    Icons({
+      compiler: "vue3", // 指定 Vue 3 编译器
+      autoInstall: true, // 自动安装缺失的图标集合
+    }),
     AutoImport({
       imports: [
         "vue",
@@ -44,7 +47,7 @@ export const sharedConfig: UserConfig = {
       dirs: [r("src/components")],
       // generate `components.d.ts` for ts support with Volar
       dts: r("src/components.d.ts"),
-      resolvers: [ElementPlusResolver(), IconsResolver({})],
+      resolvers: [ElementPlusResolver(), IconsResolver({ prefix: "" })],
     }),
 
     // https://github.com/unocss/unocss
