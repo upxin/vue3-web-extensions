@@ -1,75 +1,6 @@
 // @ts-nocheck
 import { isGray } from "~/logic/storage";
 
-function addScrollToTopButton() {
-  const button = document.createElement("button");
-  button.textContent = "↑";
-  button.id = "scrollToTopButton";
-  button.title = "滚动到顶部";
-
-  button.style.cssText = `
-    position: fixed;
-    bottom: 50px;
-    right: 2px;
-    width: 30px;
-    height: 30px;
-    border: none;
-    border-radius: 50%;
-    background-color: #007BFF;
-    color: white;
-    font-size: 18px;
-    cursor: pointer;
-    z-index: 9999;
-    opacity: 0.8;
-  `;
-
-  button.addEventListener("click", () => {
-    window.scrollTo({
-      top: 0,
-    });
-  });
-
-  // 防止重复添加
-  if (!document.getElementById("scrollToTopButton")) {
-    document.body.appendChild(button);
-  }
-}
-// 添加底部滚动按钮
-function addScrollToBottomButton() {
-  const button = document.createElement("button");
-  button.textContent = "↓"; // 优化按钮显示内容
-  button.id = "scrollToBottomButton";
-  button.title = "滚动到底部"; // 添加提示信息
-
-  // 优化后的样式
-  button.style.cssText = `
-    position: fixed;
-    bottom: 10px;
-    right: 2px;
-    width: 30px;
-    height: 30px;
-    border: none;
-    border-radius: 50%;
-    background-color: #007BFF;
-    color: white;
-    font-size: 18px;
-    cursor: pointer;
-    z-index: 9999;
-    transition: opacity 0.3s;
-    opacity: 0.8;
-  `;
-
-  button.addEventListener("click", () => {
-    window.scrollTo({
-      top: document.body.scrollHeight,
-    });
-  });
-
-  // 防止重复添加按钮
-  if (!document.getElementById("scrollToBottomButton")) {
-    document.body.appendChild(button);
-  }
-}
 function hideKl8() {
   // 获取id为currentData的元素
   const currentDataElement = document.getElementById("currentData");
@@ -175,9 +106,6 @@ function setNone(id) {
 
 export function init() {
   try {
-    // 执行 DOM 操作
-    addScrollToBottomButton();
-    addScrollToTopButton();
     const currentUrl = window.location.hostname; // 获取当前页面域名
     // 创建数字选择器（使用默认配置）
 

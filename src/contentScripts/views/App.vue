@@ -162,10 +162,23 @@ function getPre() {
   // 提取每个元素的文本内容
   const texts = Array.from(realballElements).map((element) => {
     // 获取元素内的纯文本，去除多余空格
-    return element.textContent.trim();
+    return element?.textContent?.trim();
   });
 
   copyToClipboard(texts.map((item) => Number(item)).join(" "));
+}
+
+function scrollToTop() {
+  window.scrollTo({
+    top: 0,
+  });
+}
+
+// 滚动到底部
+function scrollToBottom() {
+  window.scrollTo({
+    top: document.documentElement.scrollHeight,
+  });
 }
 </script>
 
@@ -242,4 +255,17 @@ function getPre() {
     <DataSimulation></DataSimulation>
   </Drag>
   <Overlay ref="overlayRef" v-model:is-capturing="openCap"></Overlay>
+  <!-- 滚动按钮容器（固定在右侧中间） -->
+  <div class="fixed right-4 top-1/2 -translate-y-1/2 flex flex-col gap-2 z-50">
+    <!-- 滚动到顶部按钮 -->
+    <div
+      class="i-icons8:chevron-up-round text-[#246999] cursor-pointer transition-transform text-30px"
+      @click="scrollToTop"
+    ></div>
+    <!-- 滚动到底部按钮 -->
+    <div
+      class="i-icons8:chevron-down-round text-[#246999] cursor-pointer transition-transform text-30px"
+      @click="scrollToBottom"
+    ></div>
+  </div>
 </template>
