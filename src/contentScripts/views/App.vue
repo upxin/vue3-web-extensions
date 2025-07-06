@@ -12,7 +12,7 @@ function globalLog(...args) {
 window.g = globalLog;
 
 const el = useTemplateRef<HTMLElement>("el");
-const initialValue = ref({ x: 10, y: 0 });
+const initialValue = ref({ x: 10, y: 20 });
 const { style } = useDraggable(el, {
   initialValue,
   preventDefault: true,
@@ -248,7 +248,6 @@ function scrollToBottom() {
       @mousedown.stop
       @touchstart.stop
     >
-      <span class="i-mingcute:drag-line-2-fill text-gray-400 text-lg" />
       <span class="text-gray-500 text-xs font-medium tracking-widest">
         拖动
       </span>
