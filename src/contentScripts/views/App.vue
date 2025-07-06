@@ -237,7 +237,12 @@ function scrollToBottom() {
     </section>
   </Drag>
 
-  <div ref="el" :style="style" class="fixed w-70px z-1000">
+  <div
+    v-if="cUrl.includes('lotto.sina.cn') || cUrl.includes('localhost')"
+    ref="el"
+    :style="style"
+    class="fixed w-70px z-1000"
+  >
     <div
       class="drag-handle flex items-center justify-center h-22px bg-gradient-to-r from-gray-100 to-gray-200 rounded-t-2 shadow cursor-grab select-none gap-2 hover:from-blue-100 hover:to-blue-200 transition-all"
       @mousedown.stop
@@ -249,7 +254,6 @@ function scrollToBottom() {
       </span>
     </div>
     <el-button
-      v-if="cUrl.includes('lotto.sina.cn') || cUrl.includes('localhost')"
       style="width: 70px"
       type="primary"
       size="small"
