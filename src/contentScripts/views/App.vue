@@ -238,7 +238,7 @@ function scrollToBottom() {
   </Drag>
 
   <div
-    v-if="cUrl.includes('lotto.sina.cn') || cUrl.includes('localhost')"
+    v-if="cUrl.includes('lotto.sina.cn')"
     ref="el"
     :style="style"
     class="fixed w-70px z-1000"
