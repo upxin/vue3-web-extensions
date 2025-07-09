@@ -4,7 +4,7 @@ withDefaults(defineProps<{ title?: string; showClose?: boolean }>(), {
   showClose: true,
 });
 const el = useTemplateRef<HTMLElement>("modalRef");
-const initialValue = ref({ x: 0, y: 50 });
+const initialValue = ref({ x: 0, y: 0 });
 const { style } = useDraggable(el, {
   initialValue,
   preventDefault: true,
@@ -14,8 +14,12 @@ watch(
   () => el.value,
   (v) => {
     if (v) {
-      const width = v.offsetWidth;
-      initialValue.value.x = window.innerWidth - width - 10; // 右边距40px
+      let timer = setTimeout(() => {
+        const width = v.offsetWidth;
+        initialValue.value.x = window.innerWidth - width;
+        clearTimeout(timer);
+        timer = null;
+      }, 50);
     }
   }
 );
@@ -25,6 +29,8 @@ const visible = defineModel("visible", { default: false });
 function close() {
   visible.value = false;
 }
+
+const showSlot = ref(false);
 </script>
 
 <template>
@@ -39,18 +45,37 @@ function close() {
       id="drag-title"
       class="h-30px bg-gray-100 flex text-14px font-bold items-center px-14px cursor-move border-b border-gray-200"
     >
+      <Icon
+        v-if="!showSlot"
+        icon="cuida:caret-down-outline"
+        width="24"
+        height="24"
+        style="color: #797ac6"
+        class="cursor-pointer"
+        @click="showSlot = !showSlot"
+      />
+      <Icon
+        v-else
+        icon="cuida:caret-up-outline"
+        width="24"
+        height="24"
+        style="color: #797ac6"
+        class="cursor-pointer"
+        @click="showSlot = !showSlot"
+      />
       <slot name="title">
         <span class="text-gray-700">{{ title }}</span>
       </slot>
-      <zondicons:close-outline
+      <Icon
         v-if="showClose"
+        icon="zondicons:close-outline"
         class="ml-auto text-16px cursor-pointer text-gray-400"
         @click="close"
-      />
+      ></Icon>
     </div>
 
     <!-- 内容区域 -->
-    <div class="p-4 h-[calc(100%-30px)] overflow-auto">
+    <div v-show="showSlot" class="p-4 h-[calc(100%-30px)] overflow-auto">
       <slot>
         <div class="flex items-center justify-center h-full text-gray-500">
           请在此处放置内容

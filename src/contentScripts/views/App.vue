@@ -11,28 +11,10 @@ function globalLog(...args) {
 }
 window.g = globalLog;
 
-const el = useTemplateRef<HTMLElement>("el");
-const initialValue = ref({ x: 10, y: 20 });
-const { style } = useDraggable(el, {
-  initialValue,
-  preventDefault: true,
-});
-
-onMounted(() => {
-  g("sapp");
-  nextTick(() => {
-    const elem = el.value;
-    if (elem) {
-      const width = elem.offsetWidth;
-      initialValue.value.x = window.innerWidth - width - 10; // 右边距40px
-    }
-  });
-});
-
 const shadowRoot = inject(shadowRootKey);
 
-const showBtns = ref(false);
-const [show, toggle] = useToggle(false);
+const showBtns = ref(true);
+const [showSimulater, toggle] = useToggle(false);
 const overlayRef = templateRef("overlayRef");
 
 async function copyToClipboard(text) {
@@ -113,18 +95,11 @@ function getBall() {
   // 执行主函数
   main();
 }
-onMessage("test", ({ data }) => {
-  g("chrome===: test-msg");
-  changeGray();
+
+onMessage("openBtns", ({ data }) => {
+  showBtns.value = true;
 });
 
-browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.type === "open") {
-    toggle();
-    sendResponse({ status: "success", message: "已打开面板" });
-    return true; // 保持消息通道打开
-  }
-});
 onMounted(() => {
   init();
   setTimeout(() => {
@@ -148,12 +123,9 @@ const cMap = {
 
 const cUrl = window.location.hostname;
 
-const openCap = ref(false);
+const openCut = ref(false);
 function openOverlay() {
   overlayRef.value?.startScreenshot?.();
-}
-function handleBtnClick() {
-  showBtns.value = !showBtns.value;
 }
 function getPre() {
   // 获取所有class为realball的元素
@@ -192,7 +164,7 @@ function scrollToBottom() {
 </script>
 
 <template>
-  <Drag v-model:visible="showBtns">
+  <Drag v-show="cUrl" v-model:visible="showBtns">
     <section flex flex-col items-center>
       <el-button
         style="width: 92px; margin-left: 0; margin-bottom: 10px"
@@ -237,36 +209,10 @@ function scrollToBottom() {
     </section>
   </Drag>
 
-  <div
-    v-if="cUrl.includes('lotto.sina.cn')"
-    ref="el"
-    :style="style"
-    class="fixed w-70px z-1000"
-  >
-    <div
-      class="drag-handle flex items-center justify-center h-22px bg-gradient-to-r from-gray-100 to-gray-200 rounded-t-2 shadow cursor-grab select-none gap-2 hover:from-blue-100 hover:to-blue-200 transition-all"
-      @mousedown.stop
-      @touchstart.stop
-    >
-      <span class="text-gray-500 text-xs font-medium tracking-widest">
-        拖动
-      </span>
-    </div>
-    <el-button
-      style="width: 70px"
-      type="primary"
-      size="small"
-      class="w-full rounded-b-2"
-      @click="handleBtnClick"
-    >
-      <span>{{ showBtns ? "close" : "open" }}</span>
-    </el-button>
-  </div>
-
-  <Drag v-model:visible="show">
+  <Drag v-model:visible="showSimulater">
     <DataSimulation></DataSimulation>
   </Drag>
-  <Overlay ref="overlayRef" v-model:is-capturing="openCap"></Overlay>
+  <Overlay ref="overlayRef" v-model:is-capturing="openCut"></Overlay>
   <!-- 滚动按钮容器（固定在右侧中间） -->
   <div class="fixed right-4 top-1/2 -translate-y-1/2 flex flex-col gap-2 z-50">
     <!-- 滚动到顶部按钮 -->

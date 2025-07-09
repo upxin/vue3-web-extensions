@@ -13,27 +13,15 @@ async function getActiveTabId(): Promise<number> {
   }
   return tabs[0].id!;
 }
-async function clear() {
+async function openBtns() {
   const tabId = await getActiveTabId();
   sendMessage(
-    "test",
+    "openBtns",
     { title: "优化表格" },
     { context: "content-script", tabId }
-  )
-    .then((response) => {})
-    .catch((err) => {});
-}
-
-async function handleOpenClter() {
-  const tabId = await getActiveTabId();
-
-  browser.tabs
-    .sendMessage(tabId, { type: "open", isOpen: true })
-    .then((response) => {})
-    .catch((error) => {});
-}
-function changeGray() {
-  clear();
+  ).then(() => {
+    ElMessage.success("已打开按钮");
+  });
 }
 </script>
 
@@ -41,18 +29,15 @@ function changeGray() {
   <main
     class="w-full px-4 py-5 text-center text-gray-700 h-full flex flex-col items-center box-border"
   >
-    <div class="mb-20px" @click="handleOpenClter">
-      <Logo />
-    </div>
     <el-button-group>
       <el-button type="primary" class="mb-20px" @click="openOptionsPage">
         Open Options
       </el-button>
-      <el-button type="primary" class="mb-20px" @click="clear">
-        优化表格展示
+      <el-button type="primary" class="mb-20px" @click="openBtns">
+        打开按钮组
       </el-button>
     </el-button-group>
-    <el-radio-group v-model="isGray" @change="changeGray">
+    <el-radio-group v-model="isGray">
       <el-radio value="1"> 红 1 </el-radio>
       <el-radio value="2"> 灰 2 </el-radio>
     </el-radio-group>

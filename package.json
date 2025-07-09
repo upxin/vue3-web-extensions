@@ -30,6 +30,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@iconify/vue": "^5.0.0",
     "ant-design-vue": "4.x",
     "element-plus": "^2.10.2",
     "sass": "^1.89.2"
