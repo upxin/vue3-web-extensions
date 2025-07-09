@@ -15,7 +15,7 @@ function close() {
   visible.value = false;
 }
 
-const showSlot = ref(false);
+const showSlot = ref(true);
 
 let timer = null;
 onMounted(() => {
@@ -60,7 +60,7 @@ onMounted(() => {
 
       <div
         ref="handle"
-        class="text-gray-700 whitespace-nowrap flex-1 h-full flex items-center justify-center cursor-move px-20px"
+        class="text-gray-700 whitespace-nowrap min-w-124px box-border flex-1 h-full flex items-center justify-center cursor-move px-20px"
       >
         <slot name="title">
           {{ title }}

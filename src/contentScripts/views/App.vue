@@ -170,14 +170,6 @@ function scrollToBottom() {
         style="width: 92px; margin-left: 0; margin-bottom: 10px"
         type="primary"
         size="small"
-        @click="toggle()"
-      >
-        模拟器
-      </el-button>
-      <el-button
-        style="width: 92px; margin-left: 0; margin-bottom: 10px"
-        type="primary"
-        size="small"
         @click="openOverlay"
       >
         画圈
@@ -207,10 +199,6 @@ function scrollToBottom() {
         获取预选行
       </el-button>
     </section>
-  </Drag>
-
-  <Drag v-model:visible="showSimulater">
-    <DataSimulation></DataSimulation>
   </Drag>
   <Overlay ref="overlayRef" v-model:is-capturing="openCut"></Overlay>
   <!-- 滚动按钮容器（固定在右侧中间） -->
