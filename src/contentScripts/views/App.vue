@@ -184,7 +184,7 @@ function scrollToBottom() {
       </el-button>
       <el-button
         style="width: 92px; margin-left: 0; margin-bottom: 10px"
-        type="primary"
+        type="warning"
         size="small"
         @click="getBall"
       >
