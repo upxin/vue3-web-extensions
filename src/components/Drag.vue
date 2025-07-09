@@ -42,19 +42,13 @@ onMounted(() => {
       <Icon
         v-if="!showSlot"
         icon="cuida:caret-down-outline"
-        width="24"
-        height="24"
-        style="color: #797ac6"
-        class="cursor-pointer"
+        class="cursor-pointer text-gray text-16px"
         @click="showSlot = !showSlot"
       />
       <Icon
         v-else
         icon="cuida:caret-up-outline"
-        width="24"
-        height="24"
-        style="color: #797ac6"
-        class="cursor-pointer"
+        class="cursor-pointer text-gray text-16px"
         @click="showSlot = !showSlot"
       />
 
