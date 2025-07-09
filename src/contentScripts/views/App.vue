@@ -164,7 +164,7 @@ function scrollToBottom() {
 </script>
 
 <template>
-  <Drag v-show="cUrl" v-model:visible="showBtns">
+  <Drag v-show="cUrl === 'lotto.sina.cn'" v-model:visible="showBtns">
     <section flex flex-col items-center>
       <el-button
         style="width: 92px; margin-left: 0; margin-bottom: 10px"
