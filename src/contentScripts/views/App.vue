@@ -203,15 +203,15 @@ function scrollToBottom() {
   <Overlay ref="overlayRef" v-model:is-capturing="openCut"></Overlay>
   <!-- 滚动按钮容器（固定在右侧中间） -->
   <div class="fixed right-4 top-1/2 -translate-y-1/2 flex flex-col gap-2 z-50">
-    <!-- 滚动到顶部按钮 -->
-    <div
-      class="i-icons8:chevron-up-round text-[#246999] cursor-pointer transition-transform text-30px"
+    <Icon
+      icon="cuida:caret-down-outline"
+      class="text-[#246999] cursor-pointer transition-transform text-30px"
       @click="scrollToTop"
-    ></div>
-    <!-- 滚动到底部按钮 -->
-    <div
-      class="i-icons8:chevron-down-round text-[#246999] cursor-pointer transition-transform text-30px"
+    />
+    <Icon
+      icon="cuida:caret-up-outline"
+      class="text-[#246999] cursor-pointer transition-transform text-30px"
       @click="scrollToBottom"
-    ></div>
+    />
   </div>
 </template>
