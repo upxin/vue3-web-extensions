@@ -6,7 +6,10 @@ import { defineConfig } from "vite";
 import Vue from "@vitejs/plugin-vue";
 import Components from "unplugin-vue-components/vite";
 import AutoImport from "unplugin-auto-import/vite";
-import { ElementPlusResolver } from "unplugin-vue-components/resolvers";
+import {
+  ElementPlusResolver,
+  VueUseComponentsResolver,
+} from "unplugin-vue-components/resolvers";
 import UnoCSS from "unocss/vite";
 import { isDev, port, r } from "./scripts/utils";
 import packageJson from "./package.json";
@@ -41,7 +44,7 @@ export const sharedConfig: UserConfig = {
       dirs: [r("src/components")],
       // generate `components.d.ts` for ts support with Volar
       dts: r("src/components.d.ts"),
-      resolvers: [ElementPlusResolver()],
+      resolvers: [ElementPlusResolver(), VueUseComponentsResolver()],
     }),
 
     // https://github.com/unocss/unocss

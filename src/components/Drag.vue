@@ -1,49 +1,44 @@
 <script setup lang="ts">
 withDefaults(defineProps<{ title?: string; showClose?: boolean }>(), {
-  title: "",
+  title: "拖拽区域",
   showClose: true,
 });
-const el = useTemplateRef<HTMLElement>("modalRef");
-const initialValue = ref({ x: 0, y: 0 });
-const { style } = useDraggable(el, {
-  initialValue,
-  preventDefault: true,
-});
 
-watch(
-  () => el.value,
-  (v) => {
-    if (v) {
-      let timer = setTimeout(() => {
-        const width = v.offsetWidth;
-        initialValue.value.x = window.innerWidth - width;
-        clearTimeout(timer);
-        timer = null;
-      }, 50);
-    }
-  }
-);
+const handle = useTemplateRef<HTMLElement>("handle");
+const titleEl = useTemplateRef<HTMLElement>("titleRef");
 
-const visible = defineModel("visible", { default: false });
+const initialValue = ref({ x: 100, y: 0 });
+
+const visible = defineModel("visible", { default: true });
 
 function close() {
   visible.value = false;
 }
 
 const showSlot = ref(false);
+
+let timer = null;
+onMounted(() => {
+  timer = setTimeout(() => {
+    initialValue.value.x =
+      window.innerWidth - (titleEl.value?.offsetWidth || 140);
+    clearTimeout(timer);
+    timer = null;
+  }, 50);
+});
 </script>
 
 <template>
-  <div
+  <UseDraggable
     v-if="visible"
-    ref="modalRef"
-    class="fixed bg-white rounded-lg shadow-xl overflow-hidden select-none min-w-140px"
-    :style="style"
+    class="fixed bg-white rounded-lg shadow-xl overflow-hidden select-none z-9998"
+    :initial-value="initialValue"
+    :prevent-default="true"
+    :handle="handle"
   >
-    <!-- 标题栏 - 拖拽区域 -->
     <div
-      id="drag-title"
-      class="h-30px bg-gray-100 flex text-14px font-bold items-center px-14px cursor-move border-b border-gray-200"
+      ref="titleRef"
+      class="h-30px px-10px bg-gray-100 flex text-14px font-bold items-center border-b border-gray-200"
     >
       <Icon
         v-if="!showSlot"
@@ -63,9 +58,16 @@ const showSlot = ref(false);
         class="cursor-pointer"
         @click="showSlot = !showSlot"
       />
-      <slot name="title">
-        <span class="text-gray-700">{{ title }}</span>
-      </slot>
+
+      <div
+        ref="handle"
+        class="text-gray-700 whitespace-nowrap flex-1 h-full flex items-center justify-center cursor-move px-20px"
+      >
+        <slot name="title">
+          {{ title }}
+        </slot>
+      </div>
+
       <Icon
         v-if="showClose"
         icon="zondicons:close-outline"
@@ -73,8 +75,6 @@ const showSlot = ref(false);
         @click="close"
       ></Icon>
     </div>
-
-    <!-- 内容区域 -->
     <div v-show="showSlot" class="p-4 h-[calc(100%-30px)] overflow-auto">
       <slot>
         <div class="flex items-center justify-center h-full text-gray-500">
@@ -82,5 +82,5 @@ const showSlot = ref(false);
         </div>
       </slot>
     </div>
-  </div>
+  </UseDraggable>
 </template>
