@@ -1,6 +1,6 @@
 <script setup lang="ts">
 withDefaults(defineProps<{ title?: string; showClose?: boolean }>(), {
-  title: "拖拽区域",
+  title: "",
   showClose: true,
 });
 
@@ -34,7 +34,6 @@ onMounted(() => {
     class="fixed bg-white rounded-lg shadow-xl overflow-hidden select-none z-9998"
     :initial-value="initialValue"
     :prevent-default="true"
-    :handle="handle"
   >
     <div
       ref="titleRef"
