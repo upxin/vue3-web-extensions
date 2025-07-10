@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { onMessage } from "webext-bridge/content-script";
 import { shadowRootKey } from "../keys";
-import DataSimulation from "./DataSimulation.vue";
 import Overlay from "./Overlay.vue";
 import { changeGray, init } from "./hidden";
 import { isGray } from "~/logic";
