@@ -164,6 +164,18 @@ function scrollToBottom() {
 
 <template>
   <Drag v-show="cUrl === 'lotto.sina.cn'" v-model:visible="showBtns">
+    <template #title>
+      <Icon
+        icon="oi:arrow-top"
+        class="text-[#246999] cursor-pointer text-16px mr-20px"
+        @click="scrollToTop"
+      />
+      <Icon
+        icon="oi:arrow-top"
+        class="text-[#246999] cursor-pointer text-16px rotate-180"
+        @click="scrollToBottom"
+      />
+    </template>
     <section flex flex-col items-center>
       <el-button
         style="width: 92px; margin-left: 0; margin-bottom: 10px"
@@ -200,18 +212,4 @@ function scrollToBottom() {
     </section>
   </Drag>
   <Overlay ref="overlayRef" v-model:is-capturing="openCut"></Overlay>
-  <!-- 滚动按钮容器（固定在右侧中间） -->
-  <div class="fixed right-4 top-1/2 -translate-y-1/2 flex flex-col gap-2 z-50">
-    <Icon
-      icon="cuida:caret-up-outline"
-      class="text-[#246999] cursor-pointer transition-transform text-30px"
-      @click="scrollToTop"
-    />
-
-    <Icon
-      icon="cuida:caret-down-outline"
-      class="text-[#246999] cursor-pointer transition-transform text-30px"
-      @click="scrollToBottom"
-    />
-  </div>
 </template>
