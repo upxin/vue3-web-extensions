@@ -4,8 +4,9 @@ withDefaults(defineProps<{ title?: string; showClose?: boolean }>(), {
   showClose: true,
 });
 
-const handle = useTemplateRef<HTMLElement>("handle");
-const titleEl = useTemplateRef<HTMLElement>("titleRef");
+const handle = useTemplateRef("handle");
+const titleEl = useTemplateRef("titleRef");
+const boxEl = useTemplateRef("box");
 
 const initialValue = ref({ x: 100, y: 0 });
 
@@ -18,6 +19,18 @@ function close() {
 const showSlot = ref(true);
 
 let timer = null;
+
+const { style } = useDraggable(boxEl, {
+  initialValue: initialValue.value,
+  preventDefault: true,
+  onStart(position, event) {
+    const target = event.target as HTMLElement;
+    const tag = target?.tagName;
+    if (["INPUT", "TEXTAREA", "BUTTON", "SELECT"].includes(tag)) {
+      return false; // 阻止拖动启动
+    }
+  },
+});
 onMounted(() => {
   timer = setTimeout(() => {
     initialValue.value.x =
@@ -29,11 +42,11 @@ onMounted(() => {
 </script>
 
 <template>
-  <UseDraggable
+  <div
     v-if="visible"
+    ref="box"
+    :style="style"
     class="fixed bg-white rounded-lg shadow-xl overflow-hidden select-none z-9998"
-    :initial-value="initialValue"
-    :prevent-default="true"
   >
     <div
       ref="titleRef"
@@ -75,5 +88,5 @@ onMounted(() => {
         </div>
       </slot>
     </div>
-  </UseDraggable>
+  </div>
 </template>

@@ -160,6 +160,42 @@ function scrollToBottom() {
     top: document.documentElement.scrollHeight,
   });
 }
+const times = ref(16);
+function copyRedBallsToClipboard(n = 1) {
+  const rows = document.querySelectorAll("#cpdata tr");
+  const result = [];
+  rows.forEach((tr) => {
+    const tds = Array.from(tr.querySelectorAll("td"));
+    if (!tds.length) return;
+    const redBalls = tds
+      .filter((td) => td.className.includes("chartball"))
+      .map((td) => td.textContent.trim())
+      .filter((text) => text !== "");
+    if (redBalls.length >= 6) result.push(redBalls.slice(0, 6));
+  });
+  if (!result.length) {
+    return;
+  }
+  const recentResults = result.slice(-n);
+  const jsonStr = JSON.stringify(recentResults, null, 2);
+  navigator.clipboard
+    .writeText(jsonStr)
+    .then(() => {
+      document.getElementById("copy-red-balls-btn")?.remove();
+    })
+    .catch(() => {
+      document.getElementById("copy-red-balls-btn")?.remove();
+    });
+}
+
+function createCopyButton() {
+  const button = document.createElement("button");
+  button.id = "copy-red-balls-btn";
+  button.textContent = "点击复制";
+  button.style.cssText = "position:fixed;top:220px;right:20px;z-index:9999";
+  button.onclick = () => copyRedBallsToClipboard(times.value);
+  document.body.appendChild(button);
+}
 </script>
 
 <template>
@@ -177,9 +213,21 @@ function scrollToBottom() {
       />
     </template>
     <section flex flex-col items-center>
-      <el-button
+      <el-input
+        v-model:model-value="times"
+        size="small"
         style="width: 92px; margin-left: 0; margin-bottom: 10px"
+      ></el-input>
+      <el-button
+        size="small"
+        style="width: 92px; margin-left: 0; margin-bottom: 10px"
+        @click="createCopyButton"
+      >
+        获取近期号码
+      </el-button>
+      <el-button
         type="primary"
+        style="width: 92px; margin-left: 0; margin-bottom: 10px"
         size="small"
         @click="openOverlay"
       >
@@ -203,7 +251,7 @@ function scrollToBottom() {
       </el-button>
       <el-button
         style="width: 92px; margin-left: 0; margin-bottom: 10px"
-        type="primary"
+        type="success"
         size="small"
         @click="getPre"
       >
