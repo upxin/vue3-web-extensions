@@ -161,6 +161,7 @@ function scrollToBottom() {
   });
 }
 const times = ref(16);
+const count = location.search.includes("dlt") ? 5 : 6;
 function copyRedBallsToClipboard(n = 1) {
   const rows = document.querySelectorAll("#cpdata tr");
   const result = [];
@@ -171,7 +172,7 @@ function copyRedBallsToClipboard(n = 1) {
       .filter((td) => td.className.includes("chartball"))
       .map((td) => td.textContent.trim())
       .filter((text) => text !== "");
-    if (redBalls.length >= 6) result.push(redBalls.slice(0, 6));
+    if (redBalls.length >= 6) result.push(redBalls.slice(0, count));
   });
   if (!result.length) {
     return;
