@@ -178,23 +178,11 @@ function copyRedBallsToClipboard(n = 1) {
   }
   const recentResults = result.slice(-n);
   const jsonStr = JSON.stringify(recentResults, null, 2);
-  navigator.clipboard
-    .writeText(jsonStr)
-    .then(() => {
-      document.getElementById("copy-red-balls-btn")?.remove();
-    })
-    .catch(() => {
-      document.getElementById("copy-red-balls-btn")?.remove();
-    });
+  copyToClipboard(jsonStr);
 }
 
 function createCopyButton() {
-  const button = document.createElement("button");
-  button.id = "copy-red-balls-btn";
-  button.textContent = "点击复制";
-  button.style.cssText = "position:fixed;top:220px;right:20px;z-index:9999";
-  button.onclick = () => copyRedBallsToClipboard(times.value);
-  document.body.appendChild(button);
+  copyRedBallsToClipboard(times.value);
 }
 </script>
 
