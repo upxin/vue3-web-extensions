@@ -161,7 +161,13 @@ function scrollToBottom() {
   });
 }
 const times = ref(16);
-const count = location.search.includes("dlt") ? 5 : 6;
+let count = 6; // 默认值为 ssq 的 6
+if (location.search.includes("kl8")) {
+  count = 20; // kl8 对应 20
+} else if (location.search.includes("dlt")) {
+  count = 5; // dlt 对应 5
+}
+
 function copyRedBallsToClipboard(n = 1) {
   const rows = document.querySelectorAll("#cpdata tr");
   const result = [];
