@@ -55,7 +55,7 @@ function getBall() {
     const chartballElements = element.querySelectorAll('[class*="chartball"]');
     const periodsElement = element.firstElementChild;
     const allElements = [periodsElement, ...chartballElements];
-    return allElements;
+    return allElements.map((el) => el.innerText);
   }
 
   function main() {
@@ -201,7 +201,6 @@ function getback(n = -2) {
       .filter((text) => text !== "");
     result.push(redBalls.slice(-2));
   });
-  console.log(result);
 }
 getback();
 </script>
