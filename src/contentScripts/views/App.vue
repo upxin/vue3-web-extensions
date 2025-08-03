@@ -55,9 +55,7 @@ function getBall() {
     const chartballElements = element.querySelectorAll('[class*="chartball"]');
     const periodsElement = element.firstElementChild;
     const allElements = [periodsElement, ...chartballElements];
-    return Array.from(allElements).map(
-      (el) => Number(el?.textContent.trim()) || ""
-    );
+    return allElements;
   }
 
   function main() {
@@ -191,6 +189,21 @@ function copyRedBallsToClipboard(n = 1) {
 function createCopyButton() {
   copyRedBallsToClipboard(times.value);
 }
+function getback(n = -2) {
+  const rows = document.querySelectorAll("#cpdata tr");
+  const result = [];
+  rows.forEach((tr) => {
+    const tds = Array.from(tr.querySelectorAll("td"));
+    if (!tds.length) return;
+    const redBalls = tds
+      .filter((td) => td.className.includes("chartball"))
+      .map((td) => td.textContent.trim())
+      .filter((text) => text !== "");
+    result.push(redBalls.slice(-2));
+  });
+  console.log(result);
+}
+getback();
 </script>
 
 <template>
