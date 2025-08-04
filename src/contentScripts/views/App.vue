@@ -199,8 +199,9 @@ function getback(n = -2) {
       .filter((td) => td.className.includes("chartball"))
       .map((td) => td.textContent.trim())
       .filter((text) => text !== "");
-    result.push(redBalls.slice(-2));
+    result.push(redBalls.slice(1));
   });
+  console.log(result);
 }
 getback();
 </script>
