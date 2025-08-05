@@ -1,30 +1,6 @@
 // @ts-nocheck
 import { isGray } from "~/logic/storage";
 
-function hideKl8() {
-  // 获取id为currentData的元素
-  const currentDataElement = document.getElementById("currentData");
-
-  // 检查元素是否存在
-  if (currentDataElement) {
-    // 获取所有子元素
-    const children = currentDataElement.children;
-
-    // 确保有至少两个子元素
-    if (children.length >= 2) {
-      // 删除前两个子元素
-      // 注意：每次删除后，children集合会自动更新，所以总是删除索引0的元素
-      currentDataElement.removeChild(children[0]);
-      currentDataElement.removeChild(children[0]);
-
-      console.log("成功删除前两个子元素");
-    } else {
-      console.log("子元素数量不足，无法删除前两个");
-    }
-  } else {
-    console.log("未找到id为currentData的元素");
-  }
-}
 // 通用元素隐藏函数（带安全校验）
 function hideElementsByClassName(className, count) {
   const elements = document.getElementsByClassName(className);
@@ -48,6 +24,7 @@ function clear() {
     { className: "btn-download" },
     { className: "header" },
     { className: "btn-szc" },
+    { className: "cpp-btns" },
   ];
 
   hideList.forEach((item) => {
@@ -122,7 +99,6 @@ export function init() {
       }
       setNone("wrapper");
       clear();
-      hideKl8();
     }
   } catch (error) {
     console.error("初始化失败:", error);
