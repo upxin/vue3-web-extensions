@@ -158,7 +158,7 @@ function scrollToBottom() {
     top: document.documentElement.scrollHeight,
   });
 }
-const times = ref(16);
+const times = ref(1);
 let count = 6; // 默认值为 ssq 的 6
 if (location.search.includes("kl8")) {
   count = 20; // kl8 对应 20
