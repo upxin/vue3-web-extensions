@@ -182,7 +182,10 @@ function copyRedBallsToClipboard(n = 1) {
     return;
   }
   const recentResults = result.slice(-n);
-  const jsonStr = JSON.stringify(recentResults, null, 2);
+  const jsonStr =
+    n === 1
+      ? JSON.stringify(recentResults[0], null, 2)
+      : JSON.stringify(recentResults, null, 2);
   copyToClipboard(jsonStr);
 }
 
