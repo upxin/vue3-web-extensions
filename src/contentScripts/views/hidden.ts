@@ -82,6 +82,7 @@ function setNone(id) {
 }
 
 export function init() {
+  if (window.location.search.includes("kl8")) return;
   try {
     const currentUrl = window.location.hostname; // 获取当前页面域名
     // 创建数字选择器（使用默认配置）

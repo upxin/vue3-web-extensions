@@ -13,7 +13,6 @@ window.g = globalLog;
 const shadowRoot = inject(shadowRootKey);
 
 const showBtns = ref(true);
-const [showSimulater, toggle] = useToggle(false);
 const overlayRef = templateRef("overlayRef");
 
 async function copyToClipboard(text) {
@@ -134,13 +133,13 @@ function getPre() {
     .map((element) => {
       return element?.textContent?.trim();
     })
-    .map((item) => Number(item))
+    .map((item) => Number(item).toString().padStart(2, "0"))
     .join(" ");
   const t2 = Array.from(blueballs)
     .map((element) => {
       return element?.textContent?.trim();
     })
-    .map((item) => Number(item))
+    .map((item) => Number(item).toString().padStart(2, "0"))
     .join(" ");
 
   copyToClipboard(`${t1} , ${t2}`);
