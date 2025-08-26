@@ -12,7 +12,7 @@ window.g = globalLog;
 
 const shadowRoot = inject(shadowRootKey);
 
-const showBtns = ref(false);
+const showBtns = ref(true);
 const overlayRef = templateRef("overlayRef");
 
 async function copyToClipboard(text) {

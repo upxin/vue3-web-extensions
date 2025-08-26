@@ -16,7 +16,7 @@ function close() {
   visible.value = false;
 }
 
-const showSlot = ref(true);
+const showSlot = ref(false);
 
 let timer = null;
 
