@@ -203,7 +203,7 @@ function getback(n = -2) {
       .filter((text) => text !== "");
     result.push(redBalls.slice(1));
   });
-  console.log(result);
+  // console.log(result);
 }
 getback();
 </script>

@@ -33,11 +33,10 @@ const { style } = useDraggable(boxEl, {
 });
 onMounted(() => {
   timer = setTimeout(() => {
-    initialValue.value.x =
-      window.innerWidth - (titleEl.value?.offsetWidth || 140);
+    initialValue.value.x = window.innerWidth - 176;
     clearTimeout(timer);
     timer = null;
-  }, 50);
+  }, 1000);
 });
 </script>
 
