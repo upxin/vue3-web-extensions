@@ -43,12 +43,10 @@ async function copyToClipboard(text) {
 
 function getBall() {
   if (location.hostname !== "lotto.sina.cn") return;
-  // 获取最后一个具有hasbb类的表格行
   function getLastHasbbRow() {
     return document.querySelector(".hasbb:last-child");
   }
 
-  // 从指定元素中提取所有chartball01类的文本
   function extractChartball01Texts(element) {
     if (!element) return [];
     const chartballElements = element.querySelectorAll('[class*="chartball"]');
@@ -58,7 +56,6 @@ function getBall() {
   }
 
   function main() {
-    // 1. 获取最后一个hasbb行
     const lastRow = getLastHasbbRow();
 
     if (!lastRow) {
@@ -66,29 +63,19 @@ function getBall() {
       return false;
     }
 
-    // 2. 提取chartball01文本
     const chartballTexts = extractChartball01Texts(lastRow);
 
     if (chartballTexts.length === 0) {
       console.error("未找到class为chartball01的元素");
       return false;
     }
-    function removeLeadingZeros1(str) {
-      return String(Number(str));
-    }
 
-    // 3. 拼接文本（用空格分隔）
-    const textToCopy = chartballTexts
-      .map((str) => {
-        return removeLeadingZeros1(str);
-      })
-      .join(",");
-
-    // 4. 复制到剪贴板
-    return copyToClipboard(textToCopy);
+    const textToCopy = chartballTexts.map((str) => {
+      return Number(str).toString().padStart(2, "0");
+    });
+    return copyToClipboard(JSON.stringify(textToCopy));
   }
 
-  // 执行主函数
   main();
 }
 

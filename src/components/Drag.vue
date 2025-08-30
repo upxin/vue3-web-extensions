@@ -36,7 +36,7 @@ onMounted(() => {
     initialValue.value.x = window.innerWidth - 176;
     clearTimeout(timer);
     timer = null;
-  }, 1000);
+  }, 500);
 });
 </script>
 
