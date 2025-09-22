@@ -94,11 +94,12 @@ export function init() {
       // 应用灰度样式
       document.body.style.maxWidth = "unset";
       if (document.getElementById("chartsTable")) {
-        document.getElementById("chartsTable").style.width = "100%";
+        document.getElementById("chartsTable").style.width = "1200px";
+        document.getElementById("chartsTable").style.margin = "0 auto";
       }
-      if (document.getElementsByClassName("zst_table")?.[1]) {
-        document.getElementsByClassName("zst_table")[1].style.width = "100%";
-      }
+      // if (document.getElementsByClassName("zst_table")?.[1]) {
+      //   document.getElementsByClassName("zst_table")[1].style.width = "100%";
+      // }
       setNone("wrapper");
       clear();
     }
