@@ -65,7 +65,8 @@ function clear() {
   // 调整元素宽度
   const zstElement = document.getElementById("zst");
   if (zstElement) {
-    zstElement.style.width = "auto";
+    zstElement.style.width = "1200px";
+    zstElement.style.margin = "0 auto";
   }
 
   // 调整类型列表样式
