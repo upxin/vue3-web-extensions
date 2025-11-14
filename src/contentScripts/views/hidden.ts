@@ -97,9 +97,6 @@ export function init() {
         document.getElementById("chartsTable").style.width = "1200px";
         document.getElementById("chartsTable").style.margin = "0 auto";
       }
-      // if (document.getElementsByClassName("zst_table")?.[1]) {
-      //   document.getElementsByClassName("zst_table")[1].style.width = "100%";
-      // }
       setNone("wrapper");
       clear();
     }
