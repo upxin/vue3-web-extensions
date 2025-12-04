@@ -41,42 +41,55 @@ async function copyToClipboard(text) {
   }
 }
 
+const ballIndex = ref(1); // 输入框绑定的起始期数
+
 function getBall() {
   if (location.hostname !== "lotto.sina.cn") return;
-  function getLastHasbbRow() {
-    return document.querySelector(".hasbb:last-child");
-  }
 
-  function extractChartball01Texts(element) {
-    if (!element) return [];
-    const chartballElements = element.querySelectorAll('[class*="chartball"]');
-    const periodsElement = element.firstElementChild;
-    const allElements = [periodsElement, ...chartballElements];
-    return allElements.map((el) => el.innerText);
-  }
+  const rows = Array.from(
+    document.querySelectorAll("#cpdata tr, table tr")
+  ).filter((tr) => tr.querySelector('[class*="chartball"]'));
 
-  function main() {
-    const lastRow = getLastHasbbRow();
-
-    if (!lastRow) {
-      console.error("未找到class为hasbb的表格行");
-      return false;
-    }
-
-    const chartballTexts = extractChartball01Texts(lastRow);
-
-    if (chartballTexts.length === 0) {
-      console.error("未找到class为chartball01的元素");
-      return false;
-    }
-
-    const textToCopy = chartballTexts.map((str) => {
-      return Number(str).toString().padStart(2, "0");
+  const start = Number.parseInt(String(ballIndex.value), 10);
+  if (!Number.isFinite(start) || start <= 0) {
+    ElMessage({
+      type: "warning",
+      message: "请输入有效的正整数起始期数",
+      appendTo: shadowRoot as any,
     });
-    return copyToClipboard(JSON.stringify(textToCopy));
+    return;
   }
 
-  main();
+  const targetIndex = start - 1; // 起始期数对应数组索引
+  if (targetIndex >= rows.length) {
+    ElMessage({
+      type: "warning",
+      message: `超出范围：当前仅有 ${rows.length} 期，可输入 1–${rows.length} 之间的期数`,
+      appendTo: shadowRoot as any,
+    });
+    return;
+  }
+
+  const selectedRows = rows.slice(targetIndex); // 从指定期开始到最新一期
+  const result = selectedRows.map((tr) => {
+    // 提取期号（第一个 td）
+    const period = (tr.querySelector("td")?.textContent || "").trim();
+
+    // 提取红球
+    const balls = Array.from(tr.querySelectorAll('[class*="chartball"]'))
+      .map((td) => (td.textContent || "").trim())
+      .filter(Boolean)
+      .map((v) => String(Number(v)).padStart(2, "0"));
+
+    // 提取周期信息
+    const cycles = Array.from(tr.querySelectorAll("div.bg11, div.bg12"))
+      .map((div) => (div.textContent || "").trim())
+      .filter(Boolean);
+
+    return [period, ...balls, ...cycles];
+  });
+
+  copyToClipboard(JSON.stringify(result, null, 2));
 }
 
 onMessage("openBtns", ({ data }) => {
@@ -217,10 +230,11 @@ getback();
       ></el-input>
       <el-button
         size="small"
+        type="warning"
         style="width: 92px; margin-left: 0; margin-bottom: 10px"
         @click="createCopyButton"
       >
-        获取近期号码
+        不带篮球
       </el-button>
       <el-button
         type="primary"
@@ -230,21 +244,29 @@ getback();
       >
         画圈
       </el-button>
-      <el-button
+
+      <!-- <el-button
         style="width: 92px; margin-left: 0; margin-bottom: 10px"
         type="primary"
         size="small"
         @click="handleGray"
       >
         {{ cMap[isGray] }}
-      </el-button>
+      </el-button> -->
+      <el-input
+        v-model="ballIndex"
+        size="small"
+        style="width: 92px; margin-bottom: 10px"
+        placeholder="期数(默认1)"
+      ></el-input>
+
       <el-button
         style="width: 92px; margin-left: 0; margin-bottom: 10px"
         type="warning"
         size="small"
         @click="getBall"
       >
-        最新开奖号
+        带期数和篮球
       </el-button>
       <el-button
         style="width: 92px; margin-left: 0; margin-bottom: 10px"
