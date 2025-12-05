@@ -41,7 +41,7 @@ async function copyToClipboard(text) {
   }
 }
 
-const ballIndex = ref(1); // 输入框绑定的起始期数
+const ballIndex = ref(1); // 输入框绑定的要获取的期数数量
 
 function getBall() {
   if (location.hostname !== "lotto.sina.cn") return;
@@ -50,27 +50,30 @@ function getBall() {
     document.querySelectorAll("#cpdata tr, table tr")
   ).filter((tr) => tr.querySelector('[class*="chartball"]'));
 
-  const start = Number.parseInt(String(ballIndex.value), 10);
-  if (!Number.isFinite(start) || start <= 0) {
+  const count = Number.parseInt(String(ballIndex.value), 10);
+  // 验证输入有效性
+  if (!Number.isFinite(count) || count <= 0) {
     ElMessage({
       type: "warning",
-      message: "请输入有效的正整数起始期数",
+      message: "请输入有效的正整数期数数量",
       appendTo: shadowRoot as any,
     });
     return;
   }
 
-  const targetIndex = start - 1; // 起始期数对应数组索引
-  if (targetIndex >= rows.length) {
+  // 检查数量是否超出范围
+  if (count > rows.length) {
     ElMessage({
       type: "warning",
-      message: `超出范围：当前仅有 ${rows.length} 期，可输入 1–${rows.length} 之间的期数`,
+      message: `超出范围：当前仅有 ${rows.length} 期，可输入 1–${rows.length} 之间的数量`,
       appendTo: shadowRoot as any,
     });
     return;
   }
 
-  const selectedRows = rows.slice(targetIndex); // 从指定期开始到最新一期
+  // 核心修改：从末尾取指定数量的行（最新的count期）
+  const selectedRows = rows.slice(-count); // slice(-n) 表示取最后n个元素
+
   const result = selectedRows.map((tr) => {
     // 提取期号（第一个 td）
     const period = (tr.querySelector("td")?.textContent || "").trim();
