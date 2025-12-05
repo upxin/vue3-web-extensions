@@ -71,28 +71,31 @@ function getBall() {
     return;
   }
 
-  // 核心修改：从末尾取指定数量的行（最新的count期）
-  const selectedRows = rows.slice(-count); // slice(-n) 表示取最后n个元素
+  // 取最后count行（最新的count期）
+  const selectedRows = rows.slice(-count);
 
-  const result = selectedRows.map((tr) => {
+  // 处理每行数据，过滤含冒号的无效内容
+  const resultList = selectedRows.map((tr) => {
     // 提取期号（第一个 td）
     const period = (tr.querySelector("td")?.textContent || "").trim();
 
-    // 提取红球
+    // 提取红球（仅保留数字类内容）
     const balls = Array.from(tr.querySelectorAll('[class*="chartball"]'))
       .map((td) => (td.textContent || "").trim())
       .filter(Boolean)
       .map((v) => String(Number(v)).padStart(2, "0"));
 
-    // 提取周期信息
-    const cycles = Array.from(tr.querySelectorAll("div.bg11, div.bg12"))
-      .map((div) => (div.textContent || "").trim())
-      .filter(Boolean);
+    // 合并期号+红球，过滤掉含冒号的内容（核心修复）
+    const rowData = [period, ...balls].filter((item) => !item.includes(":"));
 
-    return [period, ...balls, ...cycles];
+    return rowData;
   });
 
-  copyToClipboard(JSON.stringify(result, null, 2));
+  // 核心修复：单条数据返回一维数组，多条返回二维数组
+  const finalResult = resultList.length === 1 ? resultList[0] : resultList;
+
+  // 复制最终结果
+  copyToClipboard(JSON.stringify(finalResult, null, 2));
 }
 
 onMessage("openBtns", ({ data }) => {
@@ -105,20 +108,6 @@ onMounted(() => {
     changeGray();
   }, 0);
 });
-function handleGray() {
-  if (isGray.value === "2") {
-    isGray.value = "1";
-  } else {
-    isGray.value = "2";
-  }
-  setTimeout(() => {
-    changeGray();
-  }, 0);
-}
-const cMap = {
-  2: "改为红色",
-  1: "改为灰色",
-} as const;
 
 const cUrl = window.location.hostname;
 
