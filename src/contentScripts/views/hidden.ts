@@ -106,6 +106,11 @@ export function init() {
 
       setNone('wrapper')
       clear()
+
+      const numberTable = document.getElementById('number')
+      if (numberTable) {
+        numberTable.style.display = 'none'
+      }
     }
   }
   catch (error) {
