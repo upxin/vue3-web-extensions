@@ -107,14 +107,11 @@ export function init() {
 
       setNone('wrapper')
       clear()
-      timer = setInterval(() => {
-        const n = document.getElementById('number')
-        if (n) {
-          clearInterval(timer)
-          timer = null
-          n.style.display = 'none'
-        }
-      }, 300)
+
+      const numberTable = document.getElementById('number')
+      if (numberTable) {
+        numberTable.style.display = 'none'
+      }
     }
   }
   catch (error) {
