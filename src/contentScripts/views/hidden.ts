@@ -78,6 +78,7 @@ function setNone(id) {
     document.getElementById(id).style.display = 'none'
   }
 }
+let timer
 
 export function init() {
   try {
@@ -106,6 +107,14 @@ export function init() {
 
       setNone('wrapper')
       clear()
+      timer = setInterval(() => {
+        const n = document.getElementById('number')
+        if (n) {
+          clearInterval(timer)
+          timer = null
+          n.style.display = 'none'
+        }
+      }, 300)
     }
   }
   catch (error) {
