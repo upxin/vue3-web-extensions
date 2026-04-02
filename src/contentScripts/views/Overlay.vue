@@ -1,193 +1,197 @@
 <script setup lang="ts">
-import { ElButton } from "element-plus";
+import { ElButton } from 'element-plus'
 
 // 窗口尺寸
-const windowWidth = ref<number>(window.innerWidth);
-const windowHeight = ref<number>(window.innerHeight);
+const windowWidth = ref<number>(window.innerWidth)
+const windowHeight = ref<number>(window.innerHeight)
 
 // 截图状态
-const isCapturing = defineModel("isCapturing", { default: false });
+const isCapturing = defineModel('isCapturing', { default: false })
 const selection = reactive({
   x: 100,
   y: 100,
   width: 300,
   height: 200,
-});
+})
 
 // 拖拽状态
 const dragState = reactive({
   isDragging: false,
   isResizing: false,
-  resizeDirection: "",
+  resizeDirection: '',
   startX: 0,
   startY: 0,
   startLeft: 0,
   startTop: 0,
   startWidth: 0,
   startHeight: 0,
-});
+})
 
 // 初始化截图
 function startScreenshot() {
-  isCapturing.value = true;
-  document.documentElement.style.overflow = "hidden";
+  isCapturing.value = true
+  document.documentElement.style.overflow = 'hidden'
 
   // 设置默认选择框（屏幕中心）
-  selection.x = windowWidth.value / 2 - 150;
-  selection.y = windowHeight.value / 2 - 100;
-  selection.width = 300;
-  selection.height = 200;
+  selection.x = windowWidth.value / 2 - 150
+  selection.y = windowHeight.value / 2 - 100
+  selection.width = 300
+  selection.height = 200
 
-  document.addEventListener("mousemove", onMouseMove);
-  document.addEventListener("mouseup", onMouseUp);
+  document.addEventListener('mousemove', onMouseMove)
+  document.addEventListener('mouseup', onMouseUp)
 }
 
 // 取消截图
 function cancelScreenshot() {
-  isCapturing.value = false;
-  document.documentElement.style.overflow = "";
-  document.removeEventListener("mousemove", onMouseMove);
-  document.removeEventListener("mouseup", onMouseUp);
+  isCapturing.value = false
+  document.documentElement.style.overflow = ''
+  document.removeEventListener('mousemove', onMouseMove)
+  document.removeEventListener('mouseup', onMouseUp)
 }
 
 // 完成截图（仅关闭截图界面，不复制图片）
 function completeScreenshot() {
-  console.log("截图完成，选框位置和尺寸：", selection);
+  console.log('截图完成，选框位置和尺寸：', selection)
   // 这里可以添加保存截图信息的逻辑
-  cancelScreenshot();
+  cancelScreenshot()
 }
 
 // 开始拖拽（移动选框）
 function startDrag(e: MouseEvent) {
   // 检查是否点击在控制点上，如果是则不触发拖拽
-  const target = e.target as HTMLElement;
-  if (target.classList.contains("handle")) return;
+  const target = e.target as HTMLElement
+  if (target.classList.contains('handle'))
+    return
 
-  if (e.button !== 0) return;
-  dragState.isDragging = true;
-  dragState.startX = e.clientX;
-  dragState.startY = e.clientY;
-  dragState.startLeft = selection.x;
-  dragState.startTop = selection.y;
-  e.preventDefault();
+  if (e.button !== 0)
+    return
+  dragState.isDragging = true
+  dragState.startX = e.clientX
+  dragState.startY = e.clientY
+  dragState.startLeft = selection.x
+  dragState.startTop = selection.y
+  e.preventDefault()
 }
 
 // 开始调整大小（通过控制点）
 function startResize(direction: string, e: MouseEvent) {
-  if (e.button !== 0) return;
-  dragState.isResizing = true;
-  dragState.resizeDirection = direction;
-  dragState.startX = e.clientX;
-  dragState.startY = e.clientY;
-  dragState.startLeft = selection.x;
-  dragState.startTop = selection.y;
-  dragState.startWidth = selection.width;
-  dragState.startHeight = selection.height;
-  e.preventDefault();
+  if (e.button !== 0)
+    return
+  dragState.isResizing = true
+  dragState.resizeDirection = direction
+  dragState.startX = e.clientX
+  dragState.startY = e.clientY
+  dragState.startLeft = selection.x
+  dragState.startTop = selection.y
+  dragState.startWidth = selection.width
+  dragState.startHeight = selection.height
+  e.preventDefault()
 }
 
 // 鼠标移动事件（处理拖拽和调整大小）
 function onMouseMove(e: MouseEvent) {
   if (dragState.isDragging) {
     // 拖拽选框移动
-    const dx = e.clientX - dragState.startX;
-    const dy = e.clientY - dragState.startY;
+    const dx = e.clientX - dragState.startX
+    const dy = e.clientY - dragState.startY
 
     // 计算新的选框位置，确保不超出屏幕
     selection.x = Math.max(
       0,
-      Math.min(windowWidth.value - selection.width, dragState.startLeft + dx)
-    );
+      Math.min(windowWidth.value - selection.width, dragState.startLeft + dx),
+    )
     selection.y = Math.max(
       0,
-      Math.min(windowHeight.value - selection.height, dragState.startTop + dy)
-    );
-  } else if (dragState.isResizing) {
+      Math.min(windowHeight.value - selection.height, dragState.startTop + dy),
+    )
+  }
+  else if (dragState.isResizing) {
     // 调整选框大小
-    const dx = e.clientX - dragState.startX;
-    const dy = e.clientY - dragState.startY;
+    const dx = e.clientX - dragState.startX
+    const dy = e.clientY - dragState.startY
 
-    let newX = selection.x;
-    let newY = selection.y;
-    let newWidth = selection.width;
-    let newHeight = selection.height;
+    let newX = selection.x
+    let newY = selection.y
+    let newWidth = selection.width
+    let newHeight = selection.height
 
     // 根据拖拽方向调整尺寸和位置
     switch (dragState.resizeDirection) {
-      case "tl":
-        newWidth = dragState.startWidth - dx;
-        newHeight = dragState.startHeight - dy;
-        newX = dragState.startLeft + dx;
-        newY = dragState.startTop + dy;
-        break;
-      case "tr":
-        newWidth = dragState.startWidth + dx;
-        newHeight = dragState.startHeight - dy;
-        newY = dragState.startTop + dy;
-        break;
-      case "br":
-        newWidth = dragState.startWidth + dx;
-        newHeight = dragState.startHeight + dy;
-        break;
-      case "bl":
-        newWidth = dragState.startWidth - dx;
-        newHeight = dragState.startHeight + dy;
-        newX = dragState.startLeft + dx;
-        break;
-      case "t":
-        newHeight = dragState.startHeight - dy;
-        newY = dragState.startTop + dy;
-        break;
-      case "r":
-        newWidth = dragState.startWidth + dx;
-        break;
-      case "b":
-        newHeight = dragState.startHeight + dy;
-        break;
-      case "l":
-        newWidth = dragState.startWidth - dx;
-        newX = dragState.startLeft + dx;
-        break;
+      case 'tl':
+        newWidth = dragState.startWidth - dx
+        newHeight = dragState.startHeight - dy
+        newX = dragState.startLeft + dx
+        newY = dragState.startTop + dy
+        break
+      case 'tr':
+        newWidth = dragState.startWidth + dx
+        newHeight = dragState.startHeight - dy
+        newY = dragState.startTop + dy
+        break
+      case 'br':
+        newWidth = dragState.startWidth + dx
+        newHeight = dragState.startHeight + dy
+        break
+      case 'bl':
+        newWidth = dragState.startWidth - dx
+        newHeight = dragState.startHeight + dy
+        newX = dragState.startLeft + dx
+        break
+      case 't':
+        newHeight = dragState.startHeight - dy
+        newY = dragState.startTop + dy
+        break
+      case 'r':
+        newWidth = dragState.startWidth + dx
+        break
+      case 'b':
+        newHeight = dragState.startHeight + dy
+        break
+      case 'l':
+        newWidth = dragState.startWidth - dx
+        newX = dragState.startLeft + dx
+        break
     }
 
     // 确保尺寸不小于最小值，位置不超出屏幕
-    const minSize = 20;
+    const minSize = 20
     if (newWidth >= minSize && newHeight >= minSize) {
-      selection.x = Math.max(0, Math.min(windowWidth.value - newWidth, newX));
-      selection.y = Math.max(0, Math.min(windowHeight.value - newHeight, newY));
-      selection.width = newWidth;
-      selection.height = newHeight;
+      selection.x = Math.max(0, Math.min(windowWidth.value - newWidth, newX))
+      selection.y = Math.max(0, Math.min(windowHeight.value - newHeight, newY))
+      selection.width = newWidth
+      selection.height = newHeight
     }
   }
 }
 
 // 鼠标释放事件（结束拖拽或调整大小）
 function onMouseUp() {
-  dragState.isDragging = false;
-  dragState.isResizing = false;
-  dragState.resizeDirection = "";
+  dragState.isDragging = false
+  dragState.isResizing = false
+  dragState.resizeDirection = ''
 }
 
 // 更新窗口尺寸
 function updateWindowSize() {
-  windowWidth.value = window.innerWidth;
-  windowHeight.value = window.innerHeight;
+  windowWidth.value = window.innerWidth
+  windowHeight.value = window.innerHeight
 }
 
 // 监听窗口大小变化
 onMounted(() => {
-  window.addEventListener("resize", updateWindowSize);
-});
+  window.addEventListener('resize', updateWindowSize)
+})
 
 // 清理函数
 onUnmounted(() => {
-  document.removeEventListener("mousemove", onMouseMove);
-  document.removeEventListener("mouseup", onMouseUp);
-  window.removeEventListener("resize", updateWindowSize);
-});
+  document.removeEventListener('mousemove', onMouseMove)
+  document.removeEventListener('mouseup', onMouseUp)
+  window.removeEventListener('resize', updateWindowSize)
+})
 defineExpose({
   startScreenshot,
-});
+})
 </script>
 
 <template>
@@ -470,7 +474,7 @@ defineExpose({
 
 .toolbar {
   position: fixed;
-  bottom: 50px;
+  bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 10003;
