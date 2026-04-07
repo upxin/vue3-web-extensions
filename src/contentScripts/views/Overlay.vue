@@ -10,8 +10,8 @@ const isCapturing = defineModel('isCapturing', { default: false })
 const selection = reactive({
   x: 100,
   y: 100,
-  width: 300,
-  height: 200,
+  width: 630,
+  height: 172,
 })
 
 // 拖拽状态
@@ -35,9 +35,10 @@ function startScreenshot() {
   // 设置默认选择框（屏幕中心）
   selection.x = windowWidth.value / 2 - 150
   selection.y = windowHeight.value / 2 - 100
-  selection.width = 300
-  selection.height = 200
-
+  selection.width = 630
+  selection.height = 172
+  dragState.isDragging = false
+  dragState.isResizing = false
   document.addEventListener('mousemove', onMouseMove)
   document.addEventListener('mouseup', onMouseUp)
 }
@@ -91,6 +92,8 @@ function startResize(direction: string, e: MouseEvent) {
 
 // 鼠标移动事件（处理拖拽和调整大小）
 function onMouseMove(e: MouseEvent) {
+  if (!dragState.isDragging && !dragState.isResizing)
+    return
   if (dragState.isDragging) {
     // 拖拽选框移动
     const dx = e.clientX - dragState.startX
@@ -197,8 +200,7 @@ defineExpose({
 <template>
   <div v-if="isCapturing" class="screenshot-overlay">
     <div
-      class="mask-top"
-      :style="{
+      class="mask-top" :style="{
         width: '100%',
         height: `${selection.y}px`,
         top: '0',
@@ -208,8 +210,7 @@ defineExpose({
 
     <!-- 右侧遮罩：调整高度，不与上、下遮罩层重叠 -->
     <div
-      class="mask-right"
-      :style="{
+      class="mask-right" :style="{
         width: `${windowWidth - selection.x - selection.width}px`,
         height: `${selection.height}px`,
         left: `${selection.x + selection.width}px`,
@@ -219,8 +220,7 @@ defineExpose({
 
     <!-- 下方遮罩 -->
     <div
-      class="mask-bottom"
-      :style="{
+      class="mask-bottom" :style="{
         width: '100%',
         height: `${windowHeight - selection.y - selection.height}px`,
         top: `${selection.y + selection.height}px`,
@@ -230,8 +230,7 @@ defineExpose({
 
     <!-- 左侧遮罩：调整高度，不与上、下遮罩层重叠 -->
     <div
-      class="mask-left"
-      :style="{
+      class="mask-left" :style="{
         width: `${selection.x}px`,
         height: `${selection.height}px`,
         top: `${selection.y}px`,
@@ -241,14 +240,12 @@ defineExpose({
 
     <!-- 选择框 -->
     <div
-      class="selection-box"
-      :style="{
+      class="selection-box" :style="{
         left: `${selection.x}px`,
         top: `${selection.y}px`,
         width: `${selection.width}px`,
         height: `${selection.height}px`,
-      }"
-      @mousedown="startDrag"
+      }" @mousedown="startDrag"
     >
       <!-- 边框 -->
       <div class="border top"></div>
@@ -257,38 +254,14 @@ defineExpose({
       <div class="border left"></div>
 
       <!-- 控制点 -->
-      <div
-        class="handle handle-tl"
-        @mousedown="(e) => startResize('tl', e)"
-      ></div>
-      <div
-        class="handle handle-tr"
-        @mousedown="(e) => startResize('tr', e)"
-      ></div>
-      <div
-        class="handle handle-br"
-        @mousedown="(e) => startResize('br', e)"
-      ></div>
-      <div
-        class="handle handle-bl"
-        @mousedown="(e) => startResize('bl', e)"
-      ></div>
-      <div
-        class="handle handle-t"
-        @mousedown="(e) => startResize('t', e)"
-      ></div>
-      <div
-        class="handle handle-r"
-        @mousedown="(e) => startResize('r', e)"
-      ></div>
-      <div
-        class="handle handle-b"
-        @mousedown="(e) => startResize('b', e)"
-      ></div>
-      <div
-        class="handle handle-l"
-        @mousedown="(e) => startResize('l', e)"
-      ></div>
+      <div class="handle handle-tl" @mousedown="(e) => startResize('tl', e)"></div>
+      <div class="handle handle-tr" @mousedown="(e) => startResize('tr', e)"></div>
+      <div class="handle handle-br" @mousedown="(e) => startResize('br', e)"></div>
+      <div class="handle handle-bl" @mousedown="(e) => startResize('bl', e)"></div>
+      <div class="handle handle-t" @mousedown="(e) => startResize('t', e)"></div>
+      <div class="handle handle-r" @mousedown="(e) => startResize('r', e)"></div>
+      <div class="handle handle-b" @mousedown="(e) => startResize('b', e)"></div>
+      <div class="handle handle-l" @mousedown="(e) => startResize('l', e)"></div>
     </div>
 
     <!-- 操作栏 -->
@@ -432,39 +405,46 @@ defineExpose({
   left: -6px;
   cursor: nwse-resize;
 }
+
 .handle-tr {
   top: -6px;
   right: -6px;
   cursor: nesw-resize;
 }
+
 .handle-bl {
   bottom: -6px;
   left: -6px;
   cursor: nesw-resize;
 }
+
 .handle-br {
   bottom: -6px;
   right: -6px;
   cursor: nwse-resize;
 }
+
 .handle-t {
   top: -6px;
   left: 50%;
   transform: translateX(-50%);
   cursor: ns-resize;
 }
+
 .handle-r {
   top: 50%;
   right: -6px;
   transform: translateY(-50%);
   cursor: ew-resize;
 }
+
 .handle-b {
   bottom: -6px;
   left: 50%;
   transform: translateX(-50%);
   cursor: ns-resize;
 }
+
 .handle-l {
   top: 50%;
   left: -6px;
