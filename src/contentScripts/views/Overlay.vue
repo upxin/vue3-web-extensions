@@ -361,7 +361,7 @@ defineExpose({
 .mask-bottom,
 .mask-left {
   position: absolute;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0);
   backdrop-filter: blur(3px);
   z-index: 9998;
 }
