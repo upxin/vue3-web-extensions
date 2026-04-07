@@ -1,43 +1,43 @@
 <script setup lang="ts">
-withDefaults(defineProps<{ title?: string; showClose?: boolean }>(), {
-  title: "",
+withDefaults(defineProps<{ title?: string, showClose?: boolean }>(), {
+  title: '',
   showClose: true,
-});
+})
 
-const handle = useTemplateRef("handle");
-const titleEl = useTemplateRef("titleRef");
-const boxEl = useTemplateRef("box");
+const handle = useTemplateRef('handle')
+const titleEl = useTemplateRef('titleRef')
+const boxEl = useTemplateRef('box')
 
-const initialValue = ref({ x: 100, y: 0 });
+const initialValue = ref({ x: 100, y: 0 })
 
-const visible = defineModel("visible", { default: true });
+const visible = defineModel('visible', { default: true })
 
 function close() {
-  visible.value = false;
+  visible.value = false
 }
 
-const showSlot = ref(false);
+const showSlot = ref(true)
 
-let timer = null;
+let timer = null
 
 const { style } = useDraggable(boxEl, {
   initialValue: initialValue.value,
   preventDefault: true,
   onStart(position, event) {
-    const target = event.target as HTMLElement;
-    const tag = target?.tagName;
-    if (["INPUT", "TEXTAREA", "BUTTON", "SELECT"].includes(tag)) {
-      return false; // 阻止拖动启动
+    const target = event.target as HTMLElement
+    const tag = target?.tagName
+    if (['INPUT', 'TEXTAREA', 'BUTTON', 'SELECT'].includes(tag)) {
+      return false // 阻止拖动启动
     }
   },
-});
+})
 onMounted(() => {
   timer = setTimeout(() => {
-    initialValue.value.x = window.innerWidth - 176;
-    clearTimeout(timer);
-    timer = null;
-  }, 500);
-});
+    initialValue.value.x = window.innerWidth - 176
+    clearTimeout(timer)
+    timer = null
+  }, 500)
+})
 </script>
 
 <template>
