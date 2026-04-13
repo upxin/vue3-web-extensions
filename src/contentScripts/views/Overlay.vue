@@ -28,15 +28,22 @@ const dragState = reactive({
 })
 
 // 初始化截图
+// 初始化截图
 function startScreenshot() {
   isCapturing.value = true
   document.documentElement.style.overflow = 'hidden'
 
-  // 设置默认选择框（屏幕中心）
-  selection.x = windowWidth.value / 2 - 150
+  // 👇 核心：根据URL自动判断选框宽度
+  const isDlt = location.search.includes('dlt')
+  const defaultWidth = isDlt ? 682 : 630
+  const offsetX = isDlt ? 202 : 150 // 自动调整左边距，保证选框右侧对齐
+
+  // 设置默认选择框
+  selection.x = windowWidth.value / 2 - offsetX
   selection.y = windowHeight.value / 2 - 100
-  selection.width = 630
+  selection.width = defaultWidth // 这里自动用判断后的宽度
   selection.height = 172
+
   dragState.isDragging = false
   dragState.isResizing = false
   document.addEventListener('mousemove', onMouseMove)
