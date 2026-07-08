@@ -233,11 +233,11 @@ function makeTableFillAndScroll() {
       document.head.appendChild(styleTag)
     }
 
-    // 4. 应用标准的原生 zoom: 0.6 缩放率
+    // 4. 应用标准的原生 zoom: 0.7 缩放率
     clistDom.style.transform = 'unset'
-    clistDom.style.zoom = '0.6'
+    clistDom.style.zoom = '0.7'
 
-    // 5. 动态精确计算剩余屏幕空间，进行 0.6 缩放率的高度的等比逆向补偿
+    // 5. 动态精确计算剩余屏幕空间，进行 0.7 缩放率的高度的等比逆向补偿
     const updateLayout = () => {
       clistDom.style.height = 'auto' // 先重置，允许准确计算 top 差值
 
@@ -248,7 +248,7 @@ function makeTableFillAndScroll() {
 
       // ⚠️【核心 Bug 修复】因为缩放了 0.6，CSS 的 1px 只等于屏幕上的 0.6px
       // 必须将实际高度除以 0.6，补回缩放差，表格底边才会精准死死贴在屏幕最底端，彻底消灭大留白！
-      const compensatedHeight = remainingHeight / 0.6
+      const compensatedHeight = remainingHeight / 0.7
 
       clistDom.style.maxHeight = `${compensatedHeight}px`
       clistDom.style.height = 'auto'
