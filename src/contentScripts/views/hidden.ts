@@ -79,8 +79,37 @@ function setNone(id) {
   }
 }
 let timer
+function dlt() {
+  // content.js
+  // 检查当前网址是否包含 'dlt-omit-red'
+  if (window.location.href.includes('dlt-omit-red')) {
+    console.log('from chrome extention')
+    const changeZoom = () => {
+      const clistDom = document.getElementById('clist')
+      if (clistDom) {
+        clistDom.style.zoom = '0.6'
+        console.log('URL 匹配成功，已设置 zoom 为 0.6')
+        return true
+      }
+      return false
+    }
 
+    if (!changeZoom()) {
+      let attempts = 0
+      const interval = setInterval(() => {
+        attempts++
+        if (changeZoom() || attempts > 50) {
+          clearInterval(interval)
+        }
+      }, 100)
+    }
+  }
+  else {
+    console.log('当前 URL 不满足缩放条件，跳过执行。')
+  }
+}
 export function init() {
+  dlt()
   try {
     const currentUrl = window.location.hostname // 获取当前页面域名
     // 创建数字选择器（使用默认配置）
