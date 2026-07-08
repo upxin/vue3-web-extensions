@@ -15,8 +15,8 @@ function removeAwardAndBlueZoneColumns() {
   const isSSQ = window.location.href.includes('ssq')
 
   // 1. 动态探测当前彩种的前区/红球总列数
-  const qianQuTh = Array.from(table.querySelectorAll('th')).find(th =>
-    th.textContent.includes('前区') || th.textContent.includes('红球'),
+  const qianQuTh = Array.from(table.querySelectorAll('th')).find(
+    th => th.textContent.includes('前区') || th.textContent.includes('红球'),
   )
   let redCols = isSSQ ? 33 : 35
   if (qianQuTh) {
@@ -76,7 +76,7 @@ function removeAwardAndBlueZoneColumns() {
       tfootPeriodTh.setAttribute('rowspan', '2')
     }
 
-    while (tfootRow.children.length > (1 + redCols)) {
+    while (tfootRow.children.length > 1 + redCols) {
       tfootRow.lastElementChild.remove()
     }
 
@@ -97,8 +97,13 @@ function removeAwardAndBlueZoneColumns() {
   // 6. 依靠“绝对列数控制法”与“智能垫片”遍历并裁剪其余所有普通数据行与辅助行
   const allRows = table.querySelectorAll('tr')
   allRows.forEach((row) => {
-    if (row === firstHeaderRow || row === tfootRow || (tfootRow && row === tfootRow.nextElementSibling))
+    if (
+      row === firstHeaderRow
+      || row === tfootRow
+      || (tfootRow && row === tfootRow.nextElementSibling)
+    ) {
       return
+    }
 
     // A. 第二行表头 (顶部的 01 02 ... 数字行)
     if (row.parentElement && row.parentElement.tagName === 'THEAD') {
@@ -108,7 +113,12 @@ function removeAwardAndBlueZoneColumns() {
     }
 
     // B. tbody 中的历史开奖数据行及混入的重复数字表头行
-    else if (row.parentElement && row.parentElement.tagName === 'TBODY' && !row.getAttribute('v') && !row.classList.contains('tdzz')) {
+    else if (
+      row.parentElement
+      && row.parentElement.tagName === 'TBODY'
+      && !row.getAttribute('v')
+      && !row.classList.contains('tdzz')
+    ) {
       const firstCellText = row.cells[0] ? row.cells[0].textContent.trim() : ''
 
       // 智能探测并修复隐藏在 tbody 内部的重复数字表头行的 35 列错位 Bug
@@ -116,7 +126,9 @@ function removeAwardAndBlueZoneColumns() {
         if (!row.querySelector('.matrix-pad-cell')) {
           const pad = document.createElement('td')
           pad.className = 'matrix-pad-cell'
-          pad.style.backgroundColor = window.getComputedStyle(row.cells[0]).backgroundColor
+          pad.style.backgroundColor = window.getComputedStyle(
+            row.cells[0],
+          ).backgroundColor
           row.insertBefore(pad, row.firstElementChild)
         }
       }
@@ -129,18 +141,21 @@ function removeAwardAndBlueZoneColumns() {
         }
       }
 
-      while (row.children.length > (1 + redCols)) {
+      while (row.children.length > 1 + redCols) {
         row.lastElementChild.remove()
       }
     }
 
     // C. 辅助行（v="ball" 标记行，或者 class="tdzz" 底部次数统计行）
-    else if (row.getAttribute('v') === 'ball' || row.classList.contains('tdzz')) {
+    else if (
+      row.getAttribute('v') === 'ball'
+      || row.classList.contains('tdzz')
+    ) {
       const firstCell = row.firstElementChild
       if (firstCell && firstCell.getAttribute('colspan') === '2') {
         firstCell.removeAttribute('colspan')
       }
-      while (row.children.length > (1 + redCols)) {
+      while (row.children.length > 1 + redCols) {
         row.lastElementChild.remove()
       }
     }
@@ -158,10 +173,18 @@ function removeAwardAndBlueZoneColumns() {
 
         // 强行单独注入加粗分界线样式，彻底无视任何跨列错位
         if (numCells[idx1]) {
-          numCells[idx1].style.setProperty('border-right', '2px solid #222222', 'important')
+          numCells[idx1].style.setProperty(
+            'border-right',
+            '2px solid #ddd',
+            'important',
+          )
         }
         if (numCells[idx2]) {
-          numCells[idx2].style.setProperty('border-right', '2px solid #222222', 'important')
+          numCells[idx2].style.setProperty(
+            'border-right',
+            '2px solid #ddd',
+            'important',
+          )
         }
       }
     }
@@ -206,20 +229,20 @@ function makeTableFillAndScroll() {
 
     // 2. 根据当前 URL 判断是否执行 -fb 的手术裁剪与重组
     const isSSQ = window.location.href.includes('ssq')
-    if (window.location.href.includes('-fb')) {
-      removeAwardAndBlueZoneColumns()
-    }
+    removeAwardAndBlueZoneColumns()
 
     // 3. 动态探测列数并计算绝对像素总宽
-    const qianQuTh = Array.from(table.querySelectorAll('th')).find(th =>
-      th.textContent.includes('前区') || th.textContent.includes('红球'),
+    const qianQuTh = Array.from(table.querySelectorAll('th')).find(
+      th =>
+        th.textContent.includes('前区') || th.textContent.includes('红球'),
     )
     let redCols = isSSQ ? 33 : 35
     if (qianQuTh) {
       redCols = Number.parseInt(qianQuTh.getAttribute('colspan') || redCols)
     }
 
-    const calculatedWidthPx = CONFIG_PERIOD_WIDTH_NUM + (redCols * CONFIG_CELL_SIZE_NUM)
+    const calculatedWidthPx
+      = CONFIG_PERIOD_WIDTH_NUM + redCols * CONFIG_CELL_SIZE_NUM
     const styleTableWidth = `${calculatedWidthPx}px`
     const stylePeriodWidth = `${CONFIG_PERIOD_WIDTH_NUM}px`
     const styleCellSize = `${CONFIG_CELL_SIZE_NUM}px`
@@ -366,7 +389,10 @@ function dlt() {
   const currentHost = window.location.hostname
   const currentUrl = window.location.href
 
-  if (currentHost.includes('17500.cn') && /dlt-omit-red|ssq-omit-red|dlt-fb|ssq-fb/.test(currentUrl)) {
+  if (
+    currentHost.includes('17500.cn')
+    && /dlt-omit-red|ssq-omit-red|dlt-fb|ssq-fb/.test(currentUrl)
+  ) {
     if (dltTimer)
       clearInterval(dltTimer)
 
@@ -387,6 +413,4 @@ function dlt() {
   }
 }
 
-export {
-  dlt,
-}
+export { dlt }
