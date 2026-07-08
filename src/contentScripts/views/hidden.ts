@@ -79,8 +79,13 @@ function setNone(id) {
   }
 }
 // content.js
+// content.js
 let dltTimer = null
 let isProcessing = false // 锁：防止观察器自身修改 DOM 导致死循环
+
+// ================= ⚙️ 核心几何级正方形配置区（在此调整基础像素） ⚙️ =================
+const CONFIG_CELL_SIZE_NUM = 26 // 👈【核心】你想让数字正方形格子维持的绝对像素大小（比如 24 或 26）
+const CONFIG_PERIOD_WIDTH_NUM = 85 // 👈 左侧期号列（以及对齐垫片）的固定像素宽度
 
 // ================= 方法 1: 精准列裁剪与销毁占位（专供 -fb 页面） =================
 function removeAwardAndBlueZoneColumns() {
@@ -88,8 +93,7 @@ function removeAwardAndBlueZoneColumns() {
   if (!table)
     return false
 
-  console.log('开始重组 -fb 表格矩阵，正在精准对齐前区并释放后区占位...')
-
+  // 1. 动态探测当前彩种的前区/红球总列数 (大乐透为35，双色球为33)
   const qianQuTh = Array.from(table.querySelectorAll('th')).find(th =>
     th.textContent.includes('前区') || th.textContent.includes('红球'),
   )
@@ -97,6 +101,7 @@ function removeAwardAndBlueZoneColumns() {
     return false
   const redCols = Number.parseInt(qianQuTh.getAttribute('colspan') || 35)
 
+  // 2. 处理【顶部】大表头第一行（期号、奖号、前区、后区）
   const firstHeaderRow = table.querySelector('thead tr:first-child')
   if (firstHeaderRow) {
     const ths = firstHeaderRow.querySelectorAll('th')
@@ -107,16 +112,20 @@ function removeAwardAndBlueZoneColumns() {
       }
     })
 
+    // 重置前区的跨列数
     const redZoneTh = firstHeaderRow.querySelector('th[colspan]')
-    if (redZoneTh)
+    if (redZoneTh) {
       redZoneTh.setAttribute('colspan', redCols)
+    }
 
+    // 强制让顶部的“期号”纵向跨2行
     const periodTh = firstHeaderRow.querySelector('th')
     if (periodTh && periodTh.textContent.trim() === '期号') {
       periodTh.setAttribute('rowspan', '2')
     }
   }
 
+  // 3. 深度清理【底部】伪脚标行（tr.tfoot 及其下一行）
   const tfootRow = table.querySelector('tr.tfoot')
   if (tfootRow) {
     tfootRow.querySelectorAll('th').forEach((th) => {
@@ -147,24 +156,47 @@ function removeAwardAndBlueZoneColumns() {
     }
   }
 
+  // 4. 依靠“绝对列数控制法”与“智能垫片”遍历并裁剪其余所有普通数据行与辅助行
   const allRows = table.querySelectorAll('tr')
   allRows.forEach((row) => {
     if (row === firstHeaderRow || row === tfootRow || (tfootRow && row === tfootRow.nextElementSibling))
       return
 
+    // A. 第二行表头 (顶部的 01 02 ... 数字行)
     if (row.parentElement && row.parentElement.tagName === 'THEAD') {
       while (row.children.length > redCols) {
         row.lastElementChild.remove()
       }
     }
+
+    // B. tbody 中的历史开奖数据行及混入的重复数字表头行
     else if (row.parentElement && row.parentElement.tagName === 'TBODY' && !row.getAttribute('v') && !row.classList.contains('tdzz')) {
-      if (row.cells && row.cells[1]) {
-        row.cells[1].remove()
+      const firstCellText = row.cells[0] ? row.cells[0].textContent.trim() : ''
+
+      // 智能探测并修复隐藏在 tbody 内部的重复数字表头行的 35 列错位 Bug
+      if (firstCellText === '01' || firstCellText === '1') {
+        if (!row.querySelector('.matrix-pad-cell')) {
+          const pad = document.createElement('td')
+          pad.className = 'matrix-pad-cell'
+          pad.style.backgroundColor = window.getComputedStyle(row.cells[0]).backgroundColor
+          row.insertBefore(pad, row.firstElementChild)
+        }
       }
+      else {
+        if (row.cells && row.cells[1]) {
+          const text = row.cells[1].textContent
+          if (text.includes(',') || text.includes('+')) {
+            row.cells[1].remove()
+          }
+        }
+      }
+
       while (row.children.length > (1 + redCols)) {
         row.lastElementChild.remove()
       }
     }
+
+    // C. 辅助行（v="ball" 标记行，或者 class="tdzz" 底部次数统计行）
     else if (row.getAttribute('v') === 'ball' || row.classList.contains('tdzz')) {
       const firstCell = row.firstElementChild
       if (firstCell && firstCell.getAttribute('colspan') === '2') {
@@ -179,7 +211,7 @@ function removeAwardAndBlueZoneColumns() {
   return true
 }
 
-// ================= 方法 2: 全屏自滚动、无滚动条与高度补偿控制 =================
+// ================= 方法 2: 动态算宽、重构列控与全屏自滚动 =================
 function makeTableFillAndScroll() {
   if (isProcessing)
     return
@@ -192,7 +224,7 @@ function makeTableFillAndScroll() {
   isProcessing = true // 加锁
 
   try {
-    // 1. 【强力清除广告】无差别斩断表格大容器后面的所有动态广告节点
+    // 1. 强力清理页面下方所有干扰元素与异步广告
     const tableZoom = document.querySelector('.tablezoom')
     if (tableZoom) {
       let sibling = tableZoom.nextElementSibling
@@ -203,54 +235,127 @@ function makeTableFillAndScroll() {
         sibling = sibling.nextElementSibling
       }
     }
-
-    // 强行隐藏全页所有可能漏网的弹窗或固定定位广告 iframe
     document.querySelectorAll('iframe').forEach((iframe) => {
-      if (!clistDom.contains(iframe)) {
+      if (!clistDom.contains(iframe))
         iframe.style.setProperty('display', 'none', 'important')
-      }
     })
 
-    // 锁死外层网页滚动，不让整页往下漏出空白
+    // 锁死外层网页物理滚动
     document.body.style.overflow = 'hidden'
     document.documentElement.style.overflow = 'hidden'
     window.scrollTo(0, 0)
 
-    // 2. 根据当前 URL 智能判断：只有包含 '-fb' 时才执行切除后区和奖号的手术
+    // 2. 根据当前 URL 判断是否执行 -fb 的手术裁剪与重组
     if (window.location.href.includes('-fb')) {
       removeAwardAndBlueZoneColumns()
     }
 
-    // 3. 动态注入完全隐藏滚动条的专属底层 CSS 补丁
+    // 3. 🔍【核心重构：动态探测列数并计算绝对像素总宽】
+    const qianQuTh = Array.from(table.querySelectorAll('th')).find(th =>
+      th.textContent.includes('前区') || th.textContent.includes('红球'),
+    )
+    let redCols = window.location.href.includes('ssq') ? 33 : 35 // 安全兜底
+    if (qianQuTh) {
+      redCols = Number.parseInt(qianQuTh.getAttribute('colspan') || redCols)
+    }
+
+    // 🧮 黄金数学公式：动态推算总宽度字符串
+    const calculatedWidthPx = CONFIG_PERIOD_WIDTH_NUM + (redCols * CONFIG_CELL_SIZE_NUM)
+    const styleTableWidth = `${calculatedWidthPx}px`
+    const stylePeriodWidth = `${CONFIG_PERIOD_WIDTH_NUM}px`
+    const styleCellSize = `${CONFIG_CELL_SIZE_NUM}px`
+
+    console.log(`当前探测列数: ${redCols}, 自动推算并死锁表格总宽度为: ${styleTableWidth}`)
+
+    // 4. 🔨【粉碎原网页 col 封印】注入高精度的列宽分配器
+    table.querySelectorAll('col, colgroup').forEach(el => el.remove())
+    const customColgroup = document.createElement('colgroup')
+    customColgroup.className = 'matrix-custom-cols'
+
+    const colPeriod = document.createElement('col')
+    colPeriod.setAttribute('width', stylePeriodWidth)
+    customColgroup.appendChild(colPeriod)
+
+    for (let i = 0; i < redCols; i++) {
+      const col = document.createElement('col')
+      col.setAttribute('width', styleCellSize) // 强行分发绝对像素给每一个列
+      customColgroup.appendChild(col)
+    }
+    table.insertBefore(customColgroup, table.firstChild)
+
+    // 5. 【强力样式注入】彻底接管布局引擎
     let styleTag = document.getElementById('hide-scrollbar-style')
     if (!styleTag) {
       styleTag = document.createElement('style')
       styleTag.id = 'hide-scrollbar-style'
-      styleTag.innerHTML = `
-        #clist::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
-        #clist { -ms-overflow-style: none !important; scrollbar-width: none !important; }
-      `
+    }
+
+    styleTag.innerHTML = `
+      /* 隐藏原生滚动条 */
+      #clist::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
+      #clist { -ms-overflow-style: none !important; scrollbar-width: none !important; }
+      
+      /* 强行死锁总宽度，用绝对像素击碎原网媒体查询 */
+      #clist table {
+        table-layout: fixed !important;
+        width: ${styleTableWidth} !important;
+        min-width: ${styleTableWidth} !important; 
+        max-width: ${styleTableWidth} !important;
+        border-collapse: collapse !important;
+      }
+
+      /* 强行锁死首列期号列和垫片列的宽度 */
+      #clist table thead tr:first-child th:first-child,
+      #clist table tbody tr td:first-child,
+      #clist table tr.tfoot th:first-child,
+      #clist table tr.tdzz td:first-child,
+      #clist table tr[v="ball"] td:first-child {
+        width: ${stylePeriodWidth} !important;
+        min-width: ${stylePeriodWidth} !important;
+        max-width: ${stylePeriodWidth} !important;
+        white-space: nowrap !important;
+        text-align: center !important;
+        box-sizing: border-box !important;
+      }
+
+      /* 其余数字列：严格继承分配到的像素，锁定为完美正方形 */
+      #clist table thead tr:nth-child(2) th,
+      #clist table tbody tr td:not(:first-child),
+      #clist table tfoot tr th:not(:first-child) {
+        width: ${styleCellSize} !important;
+        min-width: ${styleCellSize} !important;
+        max-width: ${styleCellSize} !important;
+        height: ${styleCellSize} !important;
+        line-height: ${styleCellSize} !important;
+        padding: 0 !important;
+        text-align: center !important;
+        vertical-align: middle !important;
+        box-sizing: border-box !important;
+      }
+
+      /* 放行第一行大表头中的前区大格子 */
+      #clist table thead tr:first-child th:not(:first-child) {
+        width: auto !important;
+        min-width: unset !important;
+        max-width: unset !important;
+      }
+    `
+
+    if (!document.getElementById('hide-scrollbar-style')) {
       document.head.appendChild(styleTag)
     }
 
-    // 4. 应用标准的原生 zoom: 0.7 缩放率
+    // 6. ❌ 彻底废除 zoom 和 transform，实现 1:1 纯净点对点排版
     clistDom.style.transform = 'unset'
-    clistDom.style.zoom = '0.7'
+    clistDom.style.zoom = 'unset'
 
-    // 5. 动态精确计算剩余屏幕空间，进行 0.7 缩放率的高度的等比逆向补偿
+    // 7. 动态计算高度，自滚动视口无缝贴合
     const updateLayout = () => {
-      clistDom.style.height = 'auto' // 先重置，允许准确计算 top 差值
-
       const rect = clistDom.getBoundingClientRect()
-      const remainingHeight = window.innerHeight - rect.top // 肉眼可见的屏幕剩余净高度
+      const remainingHeight = window.innerHeight - rect.top
 
       clistDom.style.width = '100vw'
-
-      // ⚠️【核心 Bug 修复】因为缩放了 0.6，CSS 的 1px 只等于屏幕上的 0.6px
-      // 必须将实际高度除以 0.6，补回缩放差，表格底边才会精准死死贴在屏幕最底端，彻底消灭大留白！
-      const compensatedHeight = remainingHeight / 0.7
-
-      clistDom.style.maxHeight = `${compensatedHeight}px`
+      clistDom.style.maxHeight = `${remainingHeight}px`
       clistDom.style.height = 'auto'
       clistDom.style.overflowX = 'auto'
       clistDom.style.overflowY = 'auto'
@@ -259,7 +364,7 @@ function makeTableFillAndScroll() {
 
       if (table) {
         table.style.setProperty('margin', '0 auto', 'important')
-        table.style.marginBottom = '10px' // 极其微小的安全底部间距
+        table.style.marginBottom = '10px'
       }
     }
 
@@ -277,14 +382,14 @@ function makeTableFillAndScroll() {
   return true
 }
 
-// ================= 方法 3: 智能数据监听器（解决切1000期失效） =================
+// ================= 方法 3: 智能数据监听器（解决切换期数及刷新失效） =================
 function initAjaxObserver() {
   const targetNode = document.getElementById('clist')
   if (!targetNode)
     return
 
   const observer = new MutationObserver(() => {
-    console.log('检测到网页切换期数或重绘表格，同步应用优化...')
+    console.log('检测到网页重绘变动，正在同步重算几何矩阵...')
     makeTableFillAndScroll()
   })
 
