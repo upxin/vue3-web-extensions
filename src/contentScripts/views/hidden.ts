@@ -82,12 +82,12 @@ let timer
 function dlt() {
   // content.js
   // 检查当前网址是否包含 'dlt-omit-red'
-  if (window.location.href.includes('dlt-omit-red')) {
+  if (window.location.href.includes('dlt-omit-red') || window.location.href.includes('dlt-fb')) {
     console.log('from chrome extention')
     const changeZoom = () => {
       const clistDom = document.getElementById('clist')
       if (clistDom) {
-        clistDom.style.zoom = '0.6'
+        clistDom.style.zoom = '0.7'
         console.log('URL 匹配成功，已设置 zoom 为 0.6')
         return true
       }
