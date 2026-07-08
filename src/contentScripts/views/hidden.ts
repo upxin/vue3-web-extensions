@@ -80,9 +80,12 @@ function setNone(id) {
 }
 let timer
 function dlt() {
-  // content.js
-  // 检查当前网址是否包含 'dlt-omit-red'
-  if (window.location.href.includes('dlt-omit-red') || window.location.href.includes('dlt-fb')) {
+  const currentHost = window.location.hostname
+  const currentUrl = window.location.href
+  if (
+    currentHost.includes('17500.cn')
+    && /dlt-omit-red|ssq-omit-red|dlt-fb|ssq-fb/.test(currentUrl)
+  ) {
     console.log('from chrome extention')
     const changeZoom = () => {
       const clistDom = document.getElementById('clist')
