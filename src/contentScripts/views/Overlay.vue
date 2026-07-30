@@ -28,20 +28,32 @@ const dragState = reactive({
 })
 
 // 初始化截图
-// 初始化截图
 function startScreenshot() {
   isCapturing.value = true
   document.documentElement.style.overflow = 'hidden'
 
   // 👇 核心：根据URL自动判断选框宽度
-  const isDlt = location.search.includes('dlt')
-  const defaultWidth = isDlt ? 682 : 630
-  const offsetX = isDlt ? 202 : 150 // 自动调整左边距，保证选框右侧对齐
+  const search = location.search
+  const isKl8 = search.includes('lottoType=kl8')
+  const isDlt = search.includes('dlt')
+
+  let defaultWidth = 630
+  let offsetX = 150
+
+  if (isKl8) {
+    defaultWidth = 1340
+    // 尽量居中；若屏幕不够宽，靠左贴边
+    offsetX = Math.min(defaultWidth / 2, windowWidth.value / 2)
+  }
+  else if (isDlt) {
+    defaultWidth = 682
+    offsetX = 202
+  }
 
   // 设置默认选择框
-  selection.x = windowWidth.value / 2 - offsetX
+  selection.x = Math.max(0, windowWidth.value / 2 - offsetX)
   selection.y = windowHeight.value / 2 - 100
-  selection.width = defaultWidth // 这里自动用判断后的宽度
+  selection.width = Math.min(defaultWidth, windowWidth.value) // 不超过屏幕宽度
   selection.height = 172
 
   dragState.isDragging = false

@@ -79,6 +79,7 @@ function setNone(id) {
     document.getElementById(id).style.display = 'none'
   }
 }
+
 export function init() {
   // dlt()
   try {
@@ -90,11 +91,18 @@ export function init() {
       document.documentElement.style.userSelect = 'none'
       document.body.style.maxWidth = 'unset'
       const zstElement = document.getElementById('zst')
+
       const tB = document.getElementById('chartsTable')
       if (zstElement) {
         zstElement.style.width = '1200px'
         zstElement.style.margin = '0 auto'
       }
+      const zst_table = document.getElementById('zst_table')
+      if (zst_table) {
+        zst_table.style.width = '1200px'
+        zst_table.style.margin = '0 auto'
+      }
+
       if (tB) {
         tB.style.width = '1200px'
         tB.style.margin = '0 auto'
@@ -102,7 +110,7 @@ export function init() {
 
       if (window.location.search.includes('kl8')) {
         tB.style.width = '1400px'
-        zstElement.style.width = '1400px'
+        zst_table.style.width = '1400px'
       }
 
       setNone('wrapper')
