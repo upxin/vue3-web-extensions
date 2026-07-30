@@ -79,38 +79,124 @@ function setNone(id) {
     document.getElementById(id).style.display = 'none'
   }
 }
+/**
+ * 强制 zst_table 宽度为 100%，直到确认生效后销毁监听
+ * @param {HTMLElement} zst_table
+ * @param {number} timeoutMs 最长等待时间，超时也销毁，默认 5s
+ */
+function ensureTableWidth100(zst_table, timeoutMs = 5000) {
+  if (!zst_table)
+    return
 
+  const apply = () => {
+    zst_table.style.width = '100%'
+    zst_table.style.maxWidth = '100%'
+    zst_table.style.boxSizing = 'border-box'
+  }
+
+  apply()
+
+  const isFullWidth = () => {
+    const parent = zst_table.parentElement
+    if (!parent)
+      return false
+    // 允许 1~2px 误差（滚动条、亚像素等）
+    return Math.abs(zst_table.offsetWidth - parent.clientWidth) <= 2
+  }
+
+  // 已经是 100% 就直接结束
+  if (isFullWidth())
+    return
+
+  // 用 rAF + 定时器双保险，兼容样式被其它脚本改掉的情况
+  let stopped = false
+  const stop = () => {
+    if (stopped)
+      return
+    stopped = true
+    cancelAnimationFrame(rafId)
+    clearInterval(timer)
+    clearTimeout(timeoutId)
+    observer.disconnect()
+  }
+
+  // 1. MutationObserver：有人改 style 时立刻再设一次
+  const observer = new MutationObserver(() => {
+    apply()
+    if (isFullWidth())
+      stop()
+  })
+  observer.observe(zst_table, {
+    attributes: true,
+    attributeFilter: ['style', 'class'],
+  })
+
+  // 2. 定时检查是否已满宽
+  const timer = setInterval(() => {
+    apply()
+    if (isFullWidth())
+      stop()
+  }, 50)
+
+  // 3. rAF 再补几帧（布局刚完成时更稳）
+  let rafId = 0
+  const tick = () => {
+    apply()
+    if (isFullWidth()) {
+      stop()
+      return
+    }
+    rafId = requestAnimationFrame(tick)
+  }
+  rafId = requestAnimationFrame(tick)
+
+  // 超时兜底，避免一直监听
+  const timeoutId = setTimeout(stop, timeoutMs)
+}
 export function init() {
-  // dlt()
   try {
-    const currentUrl = window.location.hostname // 获取当前页面域名
-    // 创建数字选择器（使用默认配置）
+    const currentUrl = window.location.hostname
 
-    // 仅在目标域名且存储域名匹配时执行
     if (currentUrl.includes('lotto.sina.cn')) {
       document.documentElement.style.userSelect = 'none'
       document.body.style.maxWidth = 'unset'
+
       const zstElement = document.getElementById('zst')
+      const chartsTable = document.getElementById('chartsTable') // 正确 id
+      // 所有 class="zst_table" 的表格（含第二张 2000px 的）
+      const zstTables = document.querySelectorAll('table.zst_table')
 
-      const tB = document.getElementById('chartsTable')
+      const isKl8 = window.location.search.includes('lottoType=kl8')
+      const targetWidth = isKl8 ? '100%' : '1200px'
+
       if (zstElement) {
-        zstElement.style.width = '1200px'
+        zstElement.style.width = targetWidth
         zstElement.style.margin = '0 auto'
-      }
-      const zst_table = document.getElementById('zst_table')
-      if (zst_table) {
-        zst_table.style.width = '1200px'
-        zst_table.style.margin = '0 auto'
+        zstElement.style.maxWidth = isKl8 ? '100%' : '1200px'
       }
 
-      if (tB) {
-        tB.style.width = '1200px'
-        tB.style.margin = '0 auto'
+      // 统一处理所有走势表
+      zstTables.forEach((table) => {
+        table.style.width = targetWidth
+        table.style.maxWidth = isKl8 ? '100%' : '1200px'
+        table.style.margin = '0 auto'
+        table.style.boxSizing = 'border-box'
+      })
+
+      if (chartsTable) {
+        chartsTable.style.width = targetWidth
+        chartsTable.style.margin = '0 auto'
       }
 
-      if (window.location.search.includes('kl8')) {
-        tB.style.width = '1400px'
-        zst_table.style.width = '1400px'
+      // kl8 时强制撑满，并监听直到真正满宽
+      if (isKl8) {
+        // 父容器也必须是 100%，否则子表 100% 没意义
+        if (zstElement) {
+          ensureTableWidth100(zstElement)
+        }
+        zstTables.forEach((table) => {
+          ensureTableWidth100(table)
+        })
       }
 
       setNone('wrapper')

@@ -41,7 +41,7 @@ function startScreenshot() {
   let offsetX = 150
 
   if (isKl8) {
-    defaultWidth = 1340
+    defaultWidth = 1410
     // 尽量居中；若屏幕不够宽，靠左贴边
     offsetX = Math.min(defaultWidth / 2, windowWidth.value / 2)
   }
